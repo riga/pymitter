@@ -82,7 +82,8 @@ class EventEmitter(object):
     def on(self, event, func=None, ttl=-1):
         """
         Registers a function to an event. When *func* is *None*, decorator
-        usage is assumed. Negative *ttl* values mean infinity.
+        usage is assumed. *ttl* defines the times to listen. Negative values
+        mean infinity.
         """
         def _on(func):
             if not hasattr(func, "__call__"):
@@ -150,8 +151,8 @@ class EventEmitter(object):
 
     def off(self, event, func=None):
         """
-        Removes a function from an event. When *func* is *None*, decorator usage
-        is assumed. Negative *ttl* values mean infinity.
+        Removes a function that is registered to an event. When *func* is
+        *None*, decorator usage is assumed.
         """
         def _off(func):
             branch = self.__find_branch(event)
@@ -177,6 +178,13 @@ class EventEmitter(object):
             _off_any(func)
         else:
             return _off_any
+
+    def off_all(self):
+        """
+        Removes all registerd functions.
+        """
+        del self.__tree
+        self.__tree = self.__new_branch()
 
     def listeners(self, event):
         """
@@ -212,18 +220,11 @@ class EventEmitter(object):
 
         return [l.func for l in listeners]
 
-    def remove_all(self):
-        """
-        Removes all registerd functions.
-        """
-        del self.__tree
-        self.__tree = self.__new_branch()
-
     def emit(self, event, *args, **kwargs):
         """
         Emits an event. All functions of events that match *event* are invoked
-        with *args* and *kwargs* in the order of their registration. Wildcards
-        might be applied.
+        with *args* and *kwargs* in the exact order of their registration.
+        Wildcards might be applied.
         """
         parts = event.split(self.delimiter)
 
