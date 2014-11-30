@@ -11,6 +11,13 @@ https://github.com/asyncly/EventEmitter2.
 - Lightweight implementation, good performance
 
 
+#### Installation
+
+```
+pip install pymitter
+```
+
+
 ## Examples
 
 #### Basic usage
@@ -149,6 +156,7 @@ defines the maximum number of listeners per event. Negative values mean infinity
 ## Development
 
 - Source hosted at [GitHub](https://github.com/riga/pymitter)
+- Python module histet at [PyPI](https://pypi.python.org/pypi/pymitter).
 - Report issues, questions, feature requests on
   [GitHub Issues](https://github.com/riga/pymitter/issues)
 

@@ -3,3 +3,5 @@
 *.pyc
 *.log
 *.DS_Store
+dist
+MANIFEST
