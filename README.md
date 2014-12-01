@@ -16,7 +16,7 @@ https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL
 *pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation
 with *pip* is quite easy:
 
-```
+```console
 pip install pymitter
 ```
 
