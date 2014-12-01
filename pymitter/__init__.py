@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 
-# imports
+"""
+pymitter v0.1.3
+"""
+
+__authors__    = "Marcel Rieger"
+__copyright__  = "Copyright 2014, Marcel Rieger"
+__credits__    = ["Marcel Rieger"]
+__license__    = "MIT"
+__maintainer__ = "Marcel Rieger"
+
+
+# python imports
 from time import time
 
 
