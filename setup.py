@@ -6,9 +6,9 @@ from distutils.core import setup
 
 setup(
     name         = "pymitter",
-    version      = "0.1.5",
+    version      = "0.1.6",
     packages     = ["pymitter"],
-    description  = "Python port of the extended Node.js EventEmitter2 approach"
+    description  = "Python port of the extended Node.js EventEmitter 2 approach"
                    "providing namespaces, wildcards and TTL.",
     author       = "Marcel Rieger",
     author_email = "marcelrieger@icloud.com",
@@ -29,8 +29,8 @@ setup(
 pymitter
 ========
 
-Python port of the extended Node.js EventEmitter2 approach providing namespaces,
-wildcards and TTL.
+Python port of the extended Node.js EventEmitter 2 approach providing
+namespaces, wildcards and TTL.
 
 
 Example

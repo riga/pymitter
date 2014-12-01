@@ -4,8 +4,8 @@
 
 """
 pymitter
-Python port of the extended Node.js EventEmitter2 approach providing namespaces,
-wildcards and TTL.
+Python port of the extended Node.js EventEmitter 2 approach providing
+namespaces, wildcards and TTL.
 """
 
 
@@ -15,7 +15,7 @@ __credits__    = ["Marcel Rieger"]
 __license__    = "MIT"
 __maintainer__ = "Marcel Rieger"
 __status__     = "Development"
-__version__    = "0.1.5"
+__version__    = "0.1.6"
 
 
 # python imports
