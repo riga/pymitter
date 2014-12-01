@@ -1,14 +1,21 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 """
-pymitter v0.1.4
+pymitter
+Python port of the extended Node.js EventEmitter2 approach providing namespaces,
+wildcards and TTL.
 """
 
-__authors__    = "Marcel Rieger"
+
+__author__     = "Marcel Rieger"
 __copyright__  = "Copyright 2014, Marcel Rieger"
 __credits__    = ["Marcel Rieger"]
 __license__    = "MIT"
 __maintainer__ = "Marcel Rieger"
+__status__     = "Development"
+__version__    = "0.1.5"
 
 
 # python imports
