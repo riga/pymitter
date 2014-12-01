@@ -287,6 +287,11 @@ class Listener(object):
         self.time = time()
 
     def __call__(self, *args, **kwargs):
+        """
+        Invokes the wrapped function. If the ttl value is non-negative, it is
+        decremented by 1. In this case, returns *False* if the ttl value
+        approached 0. Returns *True* otherwise.
+        """
         self.func(*args, **kwargs)
 
         if self.ttl > 0:
