@@ -1,7 +1,7 @@
 # pymitter
 
 Python port of the extended Node.js EventEmitter 2 approach of
-https://github.com/asyncly/EventEmitter2 providin namespaces, wildcards and TTL.
+https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
 #### Features
 
