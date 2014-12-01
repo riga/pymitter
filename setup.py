@@ -6,10 +6,10 @@ from distutils.core import setup
 
 setup(
     name         = "pymitter",
-    version      = "0.1.6",
+    version      = "0.1.7",
     packages     = ["pymitter"],
-    description  = "Python port of the extended Node.js EventEmitter 2 approach"
-                   "providing namespaces, wildcards and TTL.",
+    description  = "Python port of the extended Node.js EventEmitter 2 "
+                   "approach providing namespaces, wildcards and TTL.",
     author       = "Marcel Rieger",
     author_email = "marcelrieger@icloud.com",
     url          = "https://github.com/riga/pymitter",

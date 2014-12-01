@@ -15,7 +15,7 @@ __credits__    = ["Marcel Rieger"]
 __license__    = "MIT"
 __maintainer__ = "Marcel Rieger"
 __status__     = "Development"
-__version__    = "0.1.6"
+__version__    = "0.1.7"
 
 
 # python imports
