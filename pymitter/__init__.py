@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pymitter v0.1.3
+pymitter v0.1.4
 """
 
 __authors__    = "Marcel Rieger"
@@ -94,16 +94,16 @@ class EventEmitter(object):
         """
         Registers a function to an event. When *func* is *None*, decorator
         usage is assumed. *ttl* defines the times to listen. Negative values
-        mean infinity.
+        mean infinity. Returns the function.
         """
         def _on(func):
             if not hasattr(func, "__call__"):
-                return
+                return func
 
             parts = event.split(self.delimiter)
 
             if self.__CBKEY in parts:
-                return False
+                return func
 
             branch = self.__tree
             for p in parts:
@@ -112,7 +112,7 @@ class EventEmitter(object):
             listeners = branch[self.__CBKEY]
 
             if 0 <= self.max_listeners <= len(listeners):
-                return
+                return func
 
             listener = Listener(func, event, ttl)
             listeners.append(listener)
@@ -120,14 +120,17 @@ class EventEmitter(object):
             if self.new_listener:
                 self.emit("new_listener", func, event)
 
+            return func
+
         if func is not None:
-            _on(func)
+            return _on(func)
         else:
             return _on
 
     def once(self, *args, **kwargs):
         """
-        Registers a function to an event with *ttl = 1*. See *on*.
+        Registers a function to an event with *ttl = 1*. See *on*. Returns the
+        function.
         """
         if len(args) == 3:
             args[2] = 1
@@ -138,16 +141,16 @@ class EventEmitter(object):
     def on_any(self, func=None):
         """
         Registers a function that is called every time an event is emitted.
-        When *func* is *None*, decorator usage is assumed.
+        When *func* is *None*, decorator usage is assumed. Returns the function.
         """
         def _on_any(func):
             if not hasattr(func, "__call__"):
-                return
+                return func
 
             listeners = self.__tree[self.__CBKEY]
 
             if 0 <= self.max_listeners <= len(listeners):
-                return
+                return func
 
             listener = Listener(func, None, -1)
             listeners.append(listener)
@@ -155,38 +158,44 @@ class EventEmitter(object):
             if self.new_listener:
                 self.emit("new_listener", func)
 
+            return func
+
         if func is not None:
-            _on_any(func)
+            return _on_any(func)
         else:
             return _on_any
 
     def off(self, event, func=None):
         """
         Removes a function that is registered to an event. When *func* is
-        *None*, decorator usage is assumed.
+        *None*, decorator usage is assumed. Returns the function.
         """
         def _off(func):
             branch = self.__find_branch(event)
             if branch is None:
-                return
+                return func
 
             self.__remove_listener(branch, func)
 
+            return func
+
         if func is not None:
-            _off(func)
+            return _off(func)
         else:
             return _off
 
     def off_any(self, func=None):
         """
         Removes a function that was registered via *on_any*. When *func* is
-        *None*, decorator usage is assumed.
+        *None*, decorator usage is assumed. Returns the function.
         """
         def _off_any(func):
             self.__remove_listener(self.__tree, func)
 
+            return func
+
         if func is not None:
-            _off_any(func)
+            return _off_any(func)
         else:
             return _off_any
 

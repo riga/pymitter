@@ -121,23 +121,23 @@ defines the maximum number of listeners per event. Negative values mean infinity
 
 - ##### ``on(event, func=None, ttl=-1)``
 	Registers a function to an event. When *func* is *None*, decorator usage is assumed. *ttl*
-	defines the times to listen. Negative values mean infinity.
+	defines the times to listen. Negative values mean infinity. Returns the function.
 
 - ##### ``once(event, func=None)``
 	Registers a function to an event with ``ttl = 1``. When *func* is *None*, decorator usage is
-	assumed.
+	assumed. Returns the function.
 
 - ##### ``on_any(func=None)``
 	Registers a function that is called every time an event is emitted. When *func* is *None*,
-	decorator usage is assumed.
+	decorator usage is assumed. Returns the function.
 
 - ##### ``off(event, func=None)``
 	Removes a function that is registered to an event. When *func* is *None*, decorator usage is
-	assumed.
+	assumed. Returns the function.
 
 - ##### ``off_any(func=None)``
 	Removes a function that was registered via ``on_any()``. When *func* is *None*, decorator usage
-	is assumed.
+	is assumed. Returns the function.
 
 - ##### ``off_all()``
 	Removes all functions of all events.
