@@ -13,7 +13,8 @@ https://github.com/asyncly/EventEmitter2.
 
 #### Installation
 
-*pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation with *pip* is quite easy:
+*pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation
+with *pip* is quite easy:
 
 ```
 pip install pymitter
