@@ -6,7 +6,7 @@ from distutils.core import setup
 
 setup(
     name         = "pymitter",
-    version      = "0.1.7",
+    version      = "0.2.0",
     packages     = ["pymitter"],
     description  = "Python port of the extended Node.js EventEmitter 2 "
                    "approach providing namespaces, wildcards and TTL.",
