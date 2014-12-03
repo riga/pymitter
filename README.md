@@ -113,11 +113,12 @@ ee.emit("myevent.*")
 ## API
 
 ##### ``EventEmitter(wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
-EventEmitter constructor. When *wildcard* is *True*, wildcards are used as shown in
-[this example](#wildcards). *delimiter* is used to seperate namespaces within events. If
-*new_listener* is *True*, the *"new_listener"* event is emitted every time a new listener is
-registered. Functions listening to this event are passed ``(func, event=None)``. *max_listeners*
-defines the maximum number of listeners per event. Negative values mean infinity.
+EventEmitter constructor. **Note**: always use *kwargs* for configuration. When *wildcard* is
+*True*, wildcards are used as shown in [this example](#wildcards). *delimiter* is used to seperate
+namespaces within events. If *new_listener* is *True*, the *"new_listener"* event is emitted every
+time a new listener is registered. Functions listening to this event are passed
+``(func, event=None)``. *max_listeners* defines the maximum number of listeners per event. Negative
+values mean infinity.
 
 - ##### ``on(event, func=None, ttl=-1)``
 	Registers a function to an event. When *func* is *None*, decorator usage is assumed. *ttl*

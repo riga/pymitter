@@ -15,7 +15,7 @@ __credits__    = ["Marcel Rieger"]
 __license__    = "MIT"
 __maintainer__ = "Marcel Rieger"
 __status__     = "Development"
-__version__    = "0.2.1"
+__version__    = "0.2.2"
 
 
 # python imports
@@ -30,10 +30,11 @@ class EventEmitter(object):
     __CBKEY  = "__callbacks"
     __WCCHAR = "*"
 
-    def __init__(self, wildcard=False, delimiter=".", new_listener=False,
-                 max_listeners=-1, **kwargs):
-        """ 
+    def __init__(self, **kwargs):
+        """ EventEmitter(wildcard=False, delimiter=".", new_listener=False,
+                         max_listeners=-1)
         The EventEmitter class.
+        Please always use *kwargs* in the constructor.
         - *wildcard*: When *True*, wildcards are used.
         - *delimiter*: The delimiter to seperate event namespaces.
         - *new_listener*: When *True*, the "new_listener" event is emitted every
@@ -43,10 +44,10 @@ class EventEmitter(object):
         """
         super(EventEmitter, self).__init__()
 
-        self.wildcard      = wildcard
-        self.__delimiter   = delimiter
-        self.new_listener  = new_listener
-        self.max_listeners = max_listeners
+        self.wildcard      = kwargs.get("wildcard", False)
+        self.__delimiter   = kwargs.get("delimiter", ".")
+        self.new_listener  = kwargs.get("new_listener", False)
+        self.max_listeners = kwargs.get("max_listeners", -1)
 
         self.__tree = self.__new_branch()
 
