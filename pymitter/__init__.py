@@ -15,7 +15,7 @@ __credits__    = ["Marcel Rieger"]
 __license__    = "MIT"
 __maintainer__ = "Marcel Rieger"
 __status__     = "Development"
-__version__    = "0.2.0"
+__version__    = "0.2.1"
 
 
 # python imports
@@ -31,7 +31,7 @@ class EventEmitter(object):
     __WCCHAR = "*"
 
     def __init__(self, wildcard=False, delimiter=".", new_listener=False,
-                 max_listeners=-1):
+                 max_listeners=-1, **kwargs):
         """ 
         The EventEmitter class.
         - *wildcard*: When *True*, wildcards are used.
