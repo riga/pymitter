@@ -15,14 +15,12 @@ __credits__    = ["Marcel Rieger"]
 __license__    = "MIT"
 __maintainer__ = "Marcel Rieger"
 __status__     = "Development"
-__version__    = "0.2.2"
+__version__    = "0.2.3"
+__all__        = ["EventEmitter"]
 
 
 # python imports
 from time import time
-
-
-__all__ = ["EventEmitter"]
 
 
 class EventEmitter(object):
