@@ -10,7 +10,7 @@ import unittest
 
 # adjust the path to import pymitter
 base = os.path.normpath(os.path.join(os.path.abspath(__file__), "../.."))
-sys.path.insert(0, base)
+sys.path.append(base)
 
 
 # local imports
