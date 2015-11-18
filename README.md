@@ -160,7 +160,7 @@ values mean infinity.
 ## Development
 
 - Source hosted at [GitHub](https://github.com/riga/pymitter)
-- Python module histet at [PyPI](https://pypi.python.org/pypi/pymitter).
+- Python module hostet at [PyPI](https://pypi.python.org/pypi/pymitter).
 - Report issues, questions, feature requests on
   [GitHub Issues](https://github.com/riga/pymitter/issues)
 
