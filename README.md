@@ -92,7 +92,7 @@ def handler2():
 
 @ee.on("myevent.*")
 def hander3():
-    print "handler2 called"
+    print "handler3 called"
 
 
 ee.emit("myevent.foo")
