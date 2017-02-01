@@ -56,7 +56,7 @@ from pymitter import EventEmitter
 
 ee = EventEmitter()
 
-@ee.once("myevent"):
+@ee.once("myevent")
 def handler1():
     print "handler1 called"
 
