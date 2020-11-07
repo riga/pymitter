@@ -5,18 +5,18 @@ from distutils.core import setup
 
 
 setup(
-    name         = "pymitter",
-    version      = "0.2.3",
-    packages     = ["pymitter"],
-    description  = "Python port of the extended Node.js EventEmitter 2 "
-                   "approach providing namespaces, wildcards and TTL.",
-    author       = "Marcel Rieger",
-    author_email = "marcelrieger@icloud.com",
-    url          = "https://github.com/riga/pymitter",
-    keywords     = [
+    name="pymitter",
+    version="0.2.4",
+    packages=["pymitter"],
+    description="Python port of the extended Node.js EventEmitter 2 "
+                "approach providing namespaces, wildcards and TTL.",
+    author="Marcel Rieger",
+    author_email="marcelrieger@icloud.com",
+    url="https://github.com/riga/pymitter",
+    keywords=[
         "event", "emitter", "eventemitter", "wildcard", "node", "nodejs"
     ],
-    classifiers  = [
+    classifiers=[
         "Programming Language :: Python",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -25,7 +25,7 @@ setup(
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3"
     ],
-    long_description = """\
+    long_description="""\
 pymitter
 ========
 
