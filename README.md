@@ -3,15 +3,14 @@
 Python port of the extended Node.js EventEmitter 2 approach of
 https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
-#### Features
+## Features
 
 - Namespaces with wildcards
 - Times to listen (TTL)
 - Usage via decorators or callbacks
 - Lightweight implementation, good performance
 
-
-#### Installation
+## Installation
 
 *pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation
 with *pip* is quite easy:
@@ -20,10 +19,9 @@ with *pip* is quite easy:
 pip install pymitter
 ```
 
-
 ## Examples
 
-#### Basic usage
+### Basic usage
 
 ```python
 from pymitter import EventEmitter
@@ -48,8 +46,7 @@ ee.emit("myotherevent", "bar")
 # -> "handler2 called with bar"
 ```
 
-
-#### TTL
+### TTL
 
 ```python
 from pymitter import EventEmitter
@@ -63,7 +60,7 @@ def handler1():
 @ee.on("myevent", ttl=10)
 def handler2():
     print "handler2 called"
-    
+
 
 ee.emit("myevent")
 # -> "handler1 called"
@@ -74,8 +71,7 @@ ee.emit("myevent")
 
 ```
 
-
-#### Wildcards
+### Wildcards
 
 ```python
 from pymitter import EventEmitter
@@ -109,10 +105,10 @@ ee.emit("myevent.*")
 # -> "handler3 called"
 ```
 
-
 ## API
 
-##### ``EventEmitter(wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
+### ``EventEmitter(wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
+
 EventEmitter constructor. **Note**: always use *kwargs* for configuration. When *wildcard* is
 *True*, wildcards are used as shown in [this example](#wildcards). *delimiter* is used to seperate
 namespaces within events. If *new_listener* is *True*, the *"new_listener"* event is emitted every
@@ -120,42 +116,41 @@ time a new listener is registered. Functions listening to this event are passed
 ``(func, event=None)``. *max_listeners* defines the maximum number of listeners per event. Negative
 values mean infinity.
 
-- ##### ``on(event, func=None, ttl=-1)``
+- #### ``on(event, func=None, ttl=-1)``
 	Registers a function to an event. When *func* is *None*, decorator usage is assumed. *ttl*
 	defines the times to listen. Negative values mean infinity. Returns the function.
 
-- ##### ``once(event, func=None)``
+- #### ``once(event, func=None)``
 	Registers a function to an event with ``ttl = 1``. When *func* is *None*, decorator usage is
 	assumed. Returns the function.
 
-- ##### ``on_any(func=None)``
+- #### ``on_any(func=None)``
 	Registers a function that is called every time an event is emitted. When *func* is *None*,
 	decorator usage is assumed. Returns the function.
 
-- ##### ``off(event, func=None)``
+- #### ``off(event, func=None)``
 	Removes a function that is registered to an event. When *func* is *None*, decorator usage is
 	assumed. Returns the function.
 
-- ##### ``off_any(func=None)``
+- #### ``off_any(func=None)``
 	Removes a function that was registered via ``on_any()``. When *func* is *None*, decorator usage
 	is assumed. Returns the function.
 
-- ##### ``off_all()``
+- #### ``off_all()``
 	Removes all functions of all events.
 
-- ##### ``listeners(event)``
+- #### ``listeners(event)``
 	Returns all functions that are registered to an event. Wildcards are not applied.
 
-- ##### ``listeners_any()``
+- #### ``listeners_any()``
 	Returns all functions that were registered using ``on_any()``.
 
-- ##### ``listeners_all()``
+- #### ``listeners_all()``
 	Returns all registered functions.
 
-- ##### ``emit(event, *args, **kwargs)``
+- #### ``emit(event, *args, **kwargs)``
 	Emits an event. All functions of events that match *event* are invoked with *args* and *kwargs*
 	in the exact order of their registeration. Wildcards might be applied.
-
 
 ## Development
 
@@ -163,7 +158,6 @@ values mean infinity.
 - Python module hostet at [PyPI](https://pypi.python.org/pypi/pymitter)
 - Report issues, questions, feature requests on
   [GitHub Issues](https://github.com/riga/pymitter/issues)
-
 
 ## License
 
@@ -188,7 +182,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 
 ## Authors
 
