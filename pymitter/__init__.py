@@ -18,7 +18,7 @@ __credits__ = ["Marcel Rieger"]
 __license__ = "MIT"
 __maintainer__ = "Marcel Rieger"
 __status__ = "Development"
-__version__ = "0.2.4"
+__version__ = "0.2.3"
 __all__ = ["EventEmitter"]
 
 
