@@ -1,5 +1,7 @@
 # pymitter
 
+[![Package Status](https://img.shields.io/pypi/v/pymitter.svg?style=flat)](https://pypi.python.org/pypi/pymitter) [![License](https://img.shields.io/github/license/riga/pymitter.svg)](https://github.com/riga/pymitter/blob/master/LICENSE)
+
 Python port of the extended Node.js EventEmitter 2 approach of
 https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
