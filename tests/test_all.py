@@ -12,9 +12,10 @@ import unittest
 base = os.path.normpath(os.path.join(os.path.abspath(__file__), "../.."))
 sys.path.append(base)
 
-
 # local imports
 from pymitter import EventEmitter
+
+sys.path.remove(base)
 
 
 class AllTestCase(unittest.TestCase):
@@ -47,17 +48,39 @@ class AllTestCase(unittest.TestCase):
         self.ee1.emit("1_decorator_usage", "bar")
         self.assertTrue(self.stack[-1] == "1_decorator_usage_bar")
 
-    def test_1_ttl(self):
-        # same as once
-        @self.ee1.on("1_ttl", ttl=1)
+    def test_1_ttl_on(self):
+        # Same as once.
+        @self.ee1.on("1_ttl_on", ttl=1)
         def handler(arg):
-            self.stack.append("1_ttl_" + arg)
+            self.stack.append("1_ttl_on_" + arg)
 
-        self.ee1.emit("1_ttl", "foo")
-        self.assertTrue(self.stack[-1] == "1_ttl_foo")
+        self.ee1.emit("1_ttl_on", "foo")
+        self.assertTrue(self.stack[-1] == "1_ttl_on_foo")
 
-        self.ee1.emit("1_ttl", "bar")
-        self.assertTrue(self.stack[-1] == "1_ttl_foo")
+        self.ee1.emit("1_ttl_on", "bar")
+        self.assertTrue(self.stack[-1] == "1_ttl_on_foo")
+
+    def test_1_ttl_once(self):
+        @self.ee1.once("1_ttl_once")
+        def handler(arg):
+            self.stack.append("1_ttl_once_" + arg)
+
+        self.ee1.emit("1_ttl_once", "foo")
+        self.assertTrue(self.stack[-1] == "1_ttl_once_foo")
+
+        self.ee1.emit("1_ttl_once", "bar")
+        self.assertTrue(self.stack[-1] == "1_ttl_once_foo")
+
+    def test_1_once_should_fix_ttl(self):
+        @self.ee1.once("1_ttl_once_fix", None, 2)
+        def handler(arg):
+            self.stack.append("1_ttl_once_fix_" + arg)
+
+        self.ee1.emit("1_ttl_once_fix", "foo")
+        self.assertTrue(self.stack[-1] == "1_ttl_once_fix_foo")
+
+        self.ee1.emit("1_ttl_once_fix", "bar")
+        self.assertTrue(self.stack[-1] == "1_ttl_once_fix_foo")
 
     def test_2_on_all(self):
         @self.ee2.on("2_on_all.*")

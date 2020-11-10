@@ -8,43 +8,45 @@ Python port of the extended Node.js EventEmitter 2 approach providing
 namespaces, wildcards and TTL.
 """
 
-
-__author__     = "Marcel Rieger"
-__copyright__  = "Copyright 2014, Marcel Rieger"
-__credits__    = ["Marcel Rieger"]
-__license__    = "MIT"
-__maintainer__ = "Marcel Rieger"
-__status__     = "Development"
-__version__    = "0.2.3"
-__all__        = ["EventEmitter"]
-
-
 # python imports
 from time import time
 
 
+__author__ = "Marcel Rieger"
+__copyright__ = "Copyright 2014, Marcel Rieger"
+__credits__ = ["Marcel Rieger"]
+__license__ = "MIT"
+__maintainer__ = "Marcel Rieger"
+__status__ = "Development"
+__version__ = "0.2.3"
+__all__ = ["EventEmitter"]
+
+
 class EventEmitter(object):
 
-    __CBKEY  = "__callbacks"
+    __CBKEY = "__callbacks"
     __WCCHAR = "*"
 
     def __init__(self, **kwargs):
-        """ EventEmitter(wildcard=False, delimiter=".", new_listener=False,
-                         max_listeners=-1)
+        """
+        EventEmitter(wildcard=False, delimiter=".", new_listener=False,
+        max_listeners=-1)
+
         The EventEmitter class.
         Please always use *kwargs* in the constructor.
         - *wildcard*: When *True*, wildcards are used.
-        - *delimiter*: The delimiter to seperate event namespaces.
-        - *new_listener*: When *True*, the "new_listener" event is emitted every
-          time a new listener is registered with arguments *(func, event=None)*.
-        - *max_listeners*: Maximum number of listeners per event. Negativ values
-          mean infinity.
+        - *delimiter*: The delimiter to separate event namespaces.
+        - *new_listener*: When *True*, the "new_listener" event is emitted
+          every time a new listener is registered with arguments
+          *(func, event=None)*.
+        - *max_listeners*: Maximum number of listeners per event. Negative
+          values mean infinity.
         """
         super(EventEmitter, self).__init__()
 
-        self.wildcard      = kwargs.get("wildcard", False)
-        self.__delimiter   = kwargs.get("delimiter", ".")
-        self.new_listener  = kwargs.get("new_listener", False)
+        self.wildcard = kwargs.get("wildcard", False)
+        self.__delimiter = kwargs.get("delimiter", ".")
+        self.new_listener = kwargs.get("new_listener", False)
         self.max_listeners = kwargs.get("max_listeners", -1)
 
         self.__tree = self.__new_branch()
@@ -63,11 +65,11 @@ class EventEmitter(object):
         a special item *__CBKEY* that holds registered functions. All other
         items are used to build a tree structure.
         """
-        return { cls.__CBKEY: [] }
+        return {cls.__CBKEY: []}
 
     def __find_branch(self, event):
         """
-        Returns a branch of the tree stucture that matches *event*. Wildcards
+        Returns a branch of the tree structure that matches *event*. Wildcards
         are not applied.
         """
         parts = event.split(self.delimiter)
@@ -139,7 +141,7 @@ class EventEmitter(object):
         function.
         """
         if len(args) == 3:
-            args[2] = 1
+            args = (args[0], args[1], 1)
         else:
             kwargs["ttl"] = 1
         return self.on(*args, **kwargs)
@@ -147,7 +149,8 @@ class EventEmitter(object):
     def on_any(self, func=None):
         """
         Registers a function that is called every time an event is emitted.
-        When *func* is *None*, decorator usage is assumed. Returns the function.
+        When *func* is *None*, decorator usage is assumed. Returns the
+        function.
         """
         def _on_any(func):
             if not hasattr(func, "__call__"):
@@ -207,15 +210,15 @@ class EventEmitter(object):
 
     def off_all(self):
         """
-        Removes all registerd functions.
+        Removes all registered functions.
         """
         del self.__tree
         self.__tree = self.__new_branch()
 
     def listeners(self, event):
         """
-        Returns all functions that are registered to an event. Wildcards are not
-        applied.
+        Returns all functions that are registered to an event. Wildcards are
+        not applied.
         """
         branch = self.__find_branch(event)
         if branch is None:
@@ -290,14 +293,14 @@ class Listener(object):
     def __init__(self, func, event, ttl):
         """
         The Listener class.
-        Listener instances are simple structs to handle functions and their ttl
-        values.
+        Listener instances are simple structures to handle functions and their
+        ttl values.
         """
         super(Listener, self).__init__()
 
-        self.func  = func
+        self.func = func
         self.event = event
-        self.ttl   = ttl
+        self.ttl = ttl
 
         self.time = time()
 
