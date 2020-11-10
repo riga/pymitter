@@ -1,66 +1,49 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
-# python imports
-from distutils.core import setup
 
+import os
+from setuptools import setup
+
+import pymitter
+
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
+
+keywords = [
+    "event", "emitter", "eventemitter", "wildcard", "node", "nodejs",
+]
+
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Developers",
+]
+
+# read the readme file
+with open(os.path.join(this_dir, "README.md"), "r") as f:
+    long_description = f.read()
+
+# load installation requirements
+with open(os.path.join(this_dir, "requirements.txt"), "r") as f:
+    install_requires = [line.strip() for line in f.readlines() if line.strip()]
 
 setup(
-    name="pymitter",
-    version="0.2.3",
-    packages=["pymitter"],
-    description="Python port of the extended Node.js EventEmitter 2 "
-                "approach providing namespaces, wildcards and TTL.",
-    author="Marcel Rieger",
-    author_email="marcelrieger@icloud.com",
-    url="https://github.com/riga/pymitter",
-    keywords=[
-        "event", "emitter", "eventemitter", "wildcard", "node", "nodejs"
-    ],
-    classifiers=[
-        "Programming Language :: Python",
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 3"
-    ],
-    long_description="""\
-pymitter
-========
-
-Python port of the extended Node.js EventEmitter 2 approach providing
-namespaces, wildcards and TTL.
-
-
-Example
--------
-
-::
-
-    from pymitter import EventEmitter
-
-    ee = EventEmitter()
-
-    # decorator usage
-    @ee.on("myevent")
-    def handler1(arg):
-        print "handler1 called with", arg
-
-    # callback usage
-    def handler2(arg):
-        print "handler2 called with", arg
-    ee.on("myotherevent", handler2)
-
-    # emit
-    ee.emit("myevent", "foo")
-    # -> "handler1 called with foo"
-
-    ee.emit("myotherevent", "bar")
-    # -> "handler2 called with bar"
-
-
-Source code and more info at https://github.com/riga/pymitter.
-
-"""
+    name=pymitter.__name__,
+    version=pymitter.__version__,
+    author=pymitter.__author__,
+    description=pymitter.__doc__.strip().split("\n")[0].strip(),
+    license=pymitter.__license__,
+    url=pymitter.__contact__,
+    keywords=keywords,
+    classifiers=classifiers,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    install_requires=install_requires,
+    python_requires=">=2.7",
+    zip_safe=False,
+    py_modules=[pymitter.__name__],
 )

@@ -3,12 +3,14 @@
 Python port of the extended Node.js EventEmitter 2 approach of
 https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
+
 ## Features
 
 - Namespaces with wildcards
 - Times to listen (TTL)
 - Usage via decorators or callbacks
 - Lightweight implementation, good performance
+
 
 ## Installation
 
@@ -26,17 +28,21 @@ pip install pymitter
 ```python
 from pymitter import EventEmitter
 
+
 ee = EventEmitter()
+
 
 # decorator usage
 @ee.on("myevent")
 def handler1(arg):
-   print "handler1 called with", arg
+    print("handler1 called with", arg)
+
 
 # callback usage
 def handler2(arg):
-    print "handler2 called with", arg
+    print("handler2 called with", arg)
 ee.on("myotherevent", handler2)
+
 
 # emit
 ee.emit("myevent", "foo")
@@ -46,20 +52,24 @@ ee.emit("myotherevent", "bar")
 # -> "handler2 called with bar"
 ```
 
-### TTL
+
+### TTL (times to listen)
 
 ```python
 from pymitter import EventEmitter
 
+
 ee = EventEmitter()
+
 
 @ee.once("myevent")
 def handler1():
-    print "handler1 called"
+    print("handler1 called")
+
 
 @ee.on("myevent", ttl=10)
 def handler2():
-    print "handler2 called"
+    print("handler2 called")
 
 
 ee.emit("myevent")
@@ -68,27 +78,31 @@ ee.emit("myevent")
 
 ee.emit("myevent")
 # -> "handler2 called"
-
 ```
+
 
 ### Wildcards
 
 ```python
 from pymitter import EventEmitter
 
+
 ee = EventEmitter(wildcards=True)
+
 
 @ee.on("myevent.foo")
 def handler1():
-    print "handler1 called"
+    print("handler1 called")
+
 
 @ee.on("myevent.bar")
 def handler2():
-    print "handler2 called"
+    print("handler2 called")
+
 
 @ee.on("myevent.*")
 def hander3():
-    print "handler3 called"
+    print("handler3 called")
 
 
 ee.emit("myevent.foo")
@@ -106,6 +120,7 @@ ee.emit("myevent.*")
 ```
 
 ## API
+
 
 ### ``EventEmitter(wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
 
@@ -152,37 +167,9 @@ values mean infinity.
 	Emits an event. All functions of events that match *event* are invoked with *args* and *kwargs*
 	in the exact order of their registeration. Wildcards might be applied.
 
+
 ## Development
 
 - Source hosted at [GitHub](https://github.com/riga/pymitter)
 - Python module hostet at [PyPI](https://pypi.python.org/pypi/pymitter)
-- Report issues, questions, feature requests on
-  [GitHub Issues](https://github.com/riga/pymitter/issues)
-
-## License
-
-The MIT License (MIT)
-
-Copyright (c) 2014 Marcel Rieger
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-## Authors
-
-Marcel R. ([riga](https://github.com/riga))
+- Report issues, questions, feature requests on [GitHub Issues](https://github.com/riga/pymitter/issues)
