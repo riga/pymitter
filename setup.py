@@ -35,6 +35,7 @@ setup(
     name=pymitter.__name__,
     version=pymitter.__version__,
     author=pymitter.__author__,
+    author_email=pymitter.__author_email__,
     description=pymitter.__doc__.strip().split("\n")[0].strip(),
     license=pymitter.__license__,
     url=pymitter.__contact__,

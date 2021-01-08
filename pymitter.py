@@ -9,7 +9,8 @@ from time import time
 
 
 __author__ = "Marcel Rieger"
-__copyright__ = "Copyright 2014-2020, Marcel Rieger"
+__author_email__ = "github.riga@icloud.com"
+__copyright__ = "Copyright 2014-2021, Marcel Rieger"
 __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
