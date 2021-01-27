@@ -89,7 +89,7 @@ ee.emit("myevent")
 from pymitter import EventEmitter
 
 
-ee = EventEmitter(wildcards=True)
+ee = EventEmitter(wildcard=True)
 
 
 @ee.on("myevent.foo")
