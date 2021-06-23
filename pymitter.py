@@ -199,7 +199,7 @@ class EventEmitter(object):
         """
         listeners = list(self._tree[self.CB_KEY])
 
-        branches = self._tree.values()
+        branches = list(self._tree.values())
         for b in branches:
             if not isinstance(b, dict):
                 continue
