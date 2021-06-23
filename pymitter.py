@@ -15,7 +15,7 @@ __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
 __status__ = "Development"
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __all__ = ["EventEmitter", "Listener"]
 
 
