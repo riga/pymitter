@@ -4,10 +4,6 @@
 Python port of the extended Node.js EventEmitter 2 approach providing namespaces, wildcards and TTL.
 """
 
-
-from time import time
-
-
 __author__ = "Marcel Rieger"
 __author_email__ = "github.riga@icloud.com"
 __copyright__ = "Copyright 2014-2022, Marcel Rieger"
@@ -17,6 +13,9 @@ __license__ = "BSD-3-Clause"
 __status__ = "Development"
 __version__ = "0.3.1"
 __all__ = ["EventEmitter", "Listener"]
+
+
+import time
 
 
 class EventEmitter(object):
@@ -238,6 +237,9 @@ class EventEmitter(object):
         for b in branches:
             listeners.extend(b[self.CB_KEY])
 
+        # sort listeners by registration time
+        listeners = sorted(listeners, key=lambda listener: listener.time)
+
         # call listeners in the order of their registration time
         for listener in sorted(listeners, key=lambda listener: listener.time):
             listener(*args, **kwargs)
@@ -262,7 +264,7 @@ class Listener(object):
         self.ttl = ttl
 
         # store the registration time
-        self.time = time()
+        self.time = time.time()
 
     def __call__(self, *args, **kwargs):
         """

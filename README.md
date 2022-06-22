@@ -3,8 +3,7 @@
 [![Package Status](https://img.shields.io/pypi/v/pymitter.svg?style=flat)](https://pypi.python.org/pypi/pymitter) [![License](https://img.shields.io/github/license/riga/pymitter.svg)](https://github.com/riga/pymitter/blob/master/LICENSE)
 [![Lint and test](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml)
 
-Python port of the extended Node.js EventEmitter 2 approach of
-https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
+Python port of the extended Node.js EventEmitter 2 approach of https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
 
 ## Features
@@ -17,12 +16,12 @@ https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL
 
 ## Installation
 
-*pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation
-with *pip* is quite easy:
+*pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation with *pip* is quite easy:
 
 ```console
 pip install pymitter
 ```
+
 
 ## Examples
 
