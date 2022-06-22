@@ -74,4 +74,4 @@ jobs:
           pip install -r requirements_test.txt
 
       - name: Test 🎢
-        run: python -m unittest tests.py
+        run: python -m unittest tests
