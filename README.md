@@ -18,9 +18,11 @@ Python port of the extended Node.js EventEmitter 2 approach of https://github.co
 
 *pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation with *pip* is quite easy:
 
-```console
+```shell
 pip install pymitter
 ```
+
+The last version with Python 2 support was v0.3.2 ([tag](https://github.com/riga/pymitter/tree/v0.3.2), [PypI](https://pypi.org/project/pymitter/0.3.2)).
 
 
 ## Examples
