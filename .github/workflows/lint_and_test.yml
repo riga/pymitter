@@ -1,0 +1,77 @@
+name: Lint and test
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: Lint 🔍
+        run: flake8 pymitter.py setup.py tests.py examples.py
+
+  pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Setup python 🐍
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip
+          pip install twine
+
+      - name: Check bundling 📦
+        run: python setup.py sdist
+
+      - name: Check setup 🚦
+        run: twine check "dist/$( python setup.py --fullname ).tar.gz"
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "2.7"
+          - "3.6"
+          - "3.8"
+          - "3.9"
+    name: test (python ${{ matrix.python-version }})
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Setup Python ${{ matrix.python-version }} 🐍
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: Test 🎢
+        run: python -m unittest tests.py

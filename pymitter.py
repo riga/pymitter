@@ -10,7 +10,7 @@ from time import time
 
 __author__ = "Marcel Rieger"
 __author_email__ = "github.riga@icloud.com"
-__copyright__ = "Copyright 2014-2021, Marcel Rieger"
+__copyright__ = "Copyright 2014-2022, Marcel Rieger"
 __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
@@ -185,13 +185,13 @@ class EventEmitter(object):
         if branch is None:
             return []
 
-        return [l.func for l in branch[self.CB_KEY]]
+        return [listener.func for listener in branch[self.CB_KEY]]
 
     def listeners_any(self):
         """
         Returns all functions that were registered using :py:meth:`on_any`.
         """
-        return [l.func for l in self._tree[self.CB_KEY]]
+        return [listener.func for listener in self._tree[self.CB_KEY]]
 
     def listeners_all(self):
         """
@@ -208,7 +208,7 @@ class EventEmitter(object):
 
             listeners.extend(b[self.CB_KEY])
 
-        return [l.func for l in listeners]
+        return [listener.func for listener in listeners]
 
     def emit(self, event, *args, **kwargs):
         """
@@ -239,13 +239,13 @@ class EventEmitter(object):
             listeners.extend(b[self.CB_KEY])
 
         # call listeners in the order of their registration time
-        for l in sorted(listeners, key=lambda l: l.time):
-            l(*args, **kwargs)
+        for listener in sorted(listeners, key=lambda listener: listener.time):
+            listener(*args, **kwargs)
 
         # remove listeners whose ttl value is 0
-        for l in listeners:
-            if l.ttl == 0:
-                self.off(l.event, func=l.func)
+        for listener in listeners:
+            if listener.ttl == 0:
+                self.off(listener.event, func=listener.func)
 
 
 class Listener(object):

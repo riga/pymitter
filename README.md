@@ -1,6 +1,7 @@
 # pymitter
 
 [![Package Status](https://img.shields.io/pypi/v/pymitter.svg?style=flat)](https://pypi.python.org/pypi/pymitter) [![License](https://img.shields.io/github/license/riga/pymitter.svg)](https://github.com/riga/pymitter/blob/master/LICENSE)
+[![Lint and test](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml)
 
 Python port of the extended Node.js EventEmitter 2 approach of
 https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
@@ -43,6 +44,8 @@ def handler1(arg):
 # callback usage
 def handler2(arg):
     print("handler2 called with", arg)
+
+
 ee.on("myotherevent", handler2)
 
 
@@ -134,40 +137,40 @@ time a new listener is registered. Functions listening to this event are passed
 values mean infinity.
 
 - #### ``on(event, func=None, ttl=-1)``
-	Registers a function to an event. When *func* is *None*, decorator usage is assumed. *ttl*
-	defines the times to listen. Negative values mean infinity. Returns the function.
+    Registers a function to an event. When *func* is *None*, decorator usage is assumed. *ttl*
+    defines the times to listen. Negative values mean infinity. Returns the function.
 
 - #### ``once(event, func=None)``
-	Registers a function to an event with ``ttl = 1``. When *func* is *None*, decorator usage is
-	assumed. Returns the function.
+    Registers a function to an event with ``ttl = 1``. When *func* is *None*, decorator usage is
+    assumed. Returns the function.
 
 - #### ``on_any(func=None)``
-	Registers a function that is called every time an event is emitted. When *func* is *None*,
-	decorator usage is assumed. Returns the function.
+    Registers a function that is called every time an event is emitted. When *func* is *None*,
+    decorator usage is assumed. Returns the function.
 
 - #### ``off(event, func=None)``
-	Removes a function that is registered to an event. When *func* is *None*, decorator usage is
-	assumed. Returns the function.
+    Removes a function that is registered to an event. When *func* is *None*, decorator usage is
+    assumed. Returns the function.
 
 - #### ``off_any(func=None)``
-	Removes a function that was registered via ``on_any()``. When *func* is *None*, decorator usage
-	is assumed. Returns the function.
+    Removes a function that was registered via ``on_any()``. When *func* is *None*, decorator usage
+    is assumed. Returns the function.
 
 - #### ``off_all()``
-	Removes all functions of all events.
+    Removes all functions of all events.
 
 - #### ``listeners(event)``
-	Returns all functions that are registered to an event. Wildcards are not applied.
+    Returns all functions that are registered to an event. Wildcards are not applied.
 
 - #### ``listeners_any()``
-	Returns all functions that were registered using ``on_any()``.
+    Returns all functions that were registered using ``on_any()``.
 
 - #### ``listeners_all()``
-	Returns all registered functions.
+    Returns all registered functions.
 
 - #### ``emit(event, *args, **kwargs)``
-	Emits an event. All functions of events that match *event* are invoked with *args* and *kwargs*
-	in the exact order of their registeration. Wildcards might be applied.
+    Emits an event. All functions of events that match *event* are invoked with *args* and *kwargs*
+    in the exact order of their registeration. Wildcards might be applied.
 
 
 ## Development

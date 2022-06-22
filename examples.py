@@ -17,21 +17,26 @@ ee = EventEmitter(wildcard=True, new_listener=True, max_listeners=-1)
 def on_new(func, event=None):
     print("added listener", event, func)
 
+
 @ee.on("foo")
 def handler_foo1(arg):
     print("foo handler 1 called with", arg)
+
 
 @ee.on("foo")
 def handler_foo2(arg):
     print("foo handler 2 called with", arg)
 
+
 @ee.on("foo.*", ttl=1)
 def handler_fooall(arg):
     print("foo.* handler called with", arg)
 
+
 @ee.on("foo.bar")
 def handler_foobar(arg):
     print("foo.bar handler called with", arg)
+
 
 @ee.on_any()
 def handler_any(*args, **kwargs):
