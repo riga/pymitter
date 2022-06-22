@@ -16,6 +16,7 @@ __all__ = ["EventEmitter", "Listener"]
 
 
 import time
+import asyncio
 
 
 class EventEmitter(object):
@@ -241,8 +242,12 @@ class EventEmitter(object):
         listeners = sorted(listeners, key=lambda listener: listener.time)
 
         # call listeners in the order of their registration time
-        for listener in sorted(listeners, key=lambda listener: listener.time):
-            listener(*args, **kwargs)
+        for listener in listeners:
+            coro = listener(*args, **kwargs)
+
+            # when the listener returned a coroutine, run it
+            if asyncio.iscoroutine(coro):
+                asyncio.run(coro)
 
         # remove listeners whose ttl value is 0
         for listener in listeners:
@@ -269,12 +274,13 @@ class Listener(object):
     def __call__(self, *args, **kwargs):
         """
         Invokes the wrapped function when ttl is non-zero, decreases the ttl value when positive and
-        returns whether it reached zero or not.
+        returns its return value.
         """
+        result = None
         if self.ttl != 0:
-            self.func(*args, **kwargs)
+            result = self.func(*args, **kwargs)
 
         if self.ttl > 0:
             self.ttl -= 1
 
-        return self.ttl == 0
+        return result

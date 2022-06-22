@@ -39,6 +39,27 @@ class AllTestCase(unittest.TestCase):
         self.ee1.emit("1_decorator_usage", "bar")
         self.assertTrue(stack[-1] == "1_decorator_usage_bar")
 
+    def test_1_async_callback_usage(self):
+        stack = []
+
+        async def handler(arg):
+            stack.append("1_async_callback_usage_" + arg)
+
+        self.ee1.on("1_async_callback_usage", handler)
+
+        self.ee1.emit("1_async_callback_usage", "foo")
+        self.assertTrue(stack[-1] == "1_async_callback_usage_foo")
+
+    def test_1_async_decorator_usage(self):
+        stack = []
+
+        @self.ee1.on("1_async_decorator_usage")
+        async def handler(arg):
+            stack.append("1_async_decorator_usage_" + arg)
+
+        self.ee1.emit("1_async_decorator_usage", "bar")
+        self.assertTrue(stack[-1] == "1_async_decorator_usage_bar")
+
     def test_1_ttl_on(self):
         stack = []
 
