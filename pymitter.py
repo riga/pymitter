@@ -17,6 +17,8 @@ __all__ = ["EventEmitter", "Listener"]
 
 import sys
 import time
+import collections
+import fnmatch
 import asyncio
 
 
@@ -27,90 +29,55 @@ class EventEmitter(object):
     """
     The EventEmitter class, ported from Node.js EventEmitter 2.
 
-    When *wildcard* is *True*, wildcards in event names are taken into account. When *new_listener*
-    is *True*, a ``"new_listener"`` event is emitted every time a new listener is registered with
-    arguments ``(func, event=None)``. *max_listeners* configures the maximum number of event
-    listeners. A negative numbers means that this number is unlimited. Event names have namespace
-    support with each namspace being separated by a *delimiter* which defaults to ``"."``.
+    When *wildcard* is *True*, wildcards in event names are taken into account. Event names have
+    namespace support with each namspace being separated by a *delimiter* which defaults to ``"."``.
+
+    When *new_listener* is *True*, a ``"new_listener"`` event is emitted every time a new listener
+    is registered with arguments ``(func, event=None)``. *max_listeners* configures the total
+    maximum number of event listeners. A negative numbers means that this number is unlimited.
     """
 
-    CB_KEY = "__callbacks"
-    WC_CHAR = "*"
+    new_listener_event = "new_listener"
 
-    def __init__(self, wildcard=False, new_listener=False, max_listeners=-1, delimiter="."):
-        super(EventEmitter, self).__init__()
+    def __init__(
+        self,
+        *,
+        delimiter=".",
+        wildcard=False,
+        new_listener=False,
+        max_listeners=-1,
+    ):
+        super().__init__()
 
-        self.wildcard = wildcard
-        self.delimiter = delimiter
+        # store attributes
         self.new_listener = new_listener
         self.max_listeners = max_listeners
 
-        self._tree = self._new_branch()
+        # tree of nodes keeping track of nested events
+        self._event_tree = Tree(wildcard=wildcard, delimiter=delimiter)
 
-    @classmethod
-    def _new_branch(cls):
-        """
-        Returns a new branch. Essentially, a branch is just a dictionary with a special item
-        *CB_KEY* that holds registered functions. All other items are used to build a tree
-        structure.
-        """
-        return {cls.CB_KEY: []}
+        # flat list of listeners triggerd on "any" event
+        self._any_listeners = []
 
-    def _find_branch(self, event):
-        """
-        Returns a branch of the tree structure that matches *event*. Wildcards are not applied.
-        """
-        parts = event.split(self.delimiter)
-
-        if self.CB_KEY in parts:
-            return None
-
-        branch = self._tree
-        for p in parts:
-            if p not in branch:
-                return None
-            branch = branch[p]
-
-        return branch
-
-    @classmethod
-    def _remove_listener(cls, branch, func):
-        """
-        Removes a listener given by its function *func* from a *branch*.
-        """
-        listeners = branch[cls.CB_KEY]
-
-        indexes = [i for i, l in enumerate(listeners) if l.func == func]
-
-        for i in indexes[::-1]:
-            listeners.pop(i)
+    @property
+    def num_listeners(self):
+        return self._event_tree.num_listeners() + len(self._any_listeners)
 
     def on(self, event, func=None, ttl=-1):
         """
-        Registers a function to an event. *ttl* defines the times to listen. Negative values mean
-        infinity. When *func* is *None*, decorator usage is assumed. Returns the function.
+        Registers a function to an event. *ttl* defines the times to listen with negative values
+        meaning infinity. When *func* is *None*, decorator usage is assumed. Returns the wrapped
+        function.
         """
         def on(func):
-            if not callable(func):
+            # do not register the function when the maximum would be exceeded
+            if 0 <= self.max_listeners <= self.num_listeners:
                 return func
 
-            parts = event.split(self.delimiter)
-            if self.CB_KEY in parts:
-                return func
-
-            branch = self._tree
-            for p in parts:
-                branch = branch.setdefault(p, self._new_branch())
-
-            listeners = branch[self.CB_KEY]
-            if 0 <= self.max_listeners <= len(listeners):
-                return func
-
-            listener = Listener(func, event, ttl)
-            listeners.append(listener)
-
-            if self.new_listener:
-                self.emit("new_listener", func, event)
+            # create a new listener and add it
+            self._event_tree.add_listener(event, Listener(func, event, ttl))
+            if self.new_listener and event != self.new_listener_event:
+                self.emit(self.new_listener_event, func, event)
 
             return func
 
@@ -119,29 +86,25 @@ class EventEmitter(object):
     def once(self, event, func=None):
         """
         Registers a function to an event that is called once. When *func* is *None*, decorator usage
-        is assumed. Returns the function.
+        is assumed. Returns the wrapped function.
         """
         return self.on(event, func=func, ttl=1)
 
     def on_any(self, func=None, ttl=-1):
         """
         Registers a function that is called every time an event is emitted. *ttl* defines the times
-        to listen. Negative values mean infinity. When *func* is *None*, decorator usage is assumed.
-        Returns the function.
+        to listen with negative values meaning infinity. When *func* is *None*, decorator usage is
+        assumed. Returns the wrapped function.
         """
         def on_any(func):
-            if not callable(func):
+            # do not register the function when the maximum would be exceeded
+            if 0 <= self.max_listeners <= self.num_listeners:
                 return func
 
-            listeners = self._tree[self.CB_KEY]
-            if 0 <= self.max_listeners <= len(listeners):
-                return func
-
-            listener = Listener(func, None, ttl)
-            listeners.append(listener)
-
+            # create a new listener and add it
+            self._any_listeners.append(Listener(func, None, ttl))
             if self.new_listener:
-                self.emit("new_listener", func)
+                self.emit(self.new_listener_event, func)
 
             return func
 
@@ -150,14 +113,10 @@ class EventEmitter(object):
     def off(self, event, func=None):
         """
         Removes a function that is registered to an event. When *func* is *None*, decorator usage is
-        assumed. Returns the function.
+        assumed. Returns the wrapped function.
         """
         def off(func):
-            branch = self._find_branch(event)
-            if branch is None:
-                return func
-
-            self._remove_listener(branch, func)
+            self._event_tree.remove_listeners_by_func(event, func)
 
             return func
 
@@ -166,10 +125,14 @@ class EventEmitter(object):
     def off_any(self, func=None):
         """
         Removes a function that was registered via :py:meth:`on_any`. When *func* is *None*,
-        decorator usage is assumed. Returns the function.
+        decorator usage is assumed. Returns the wrapped function.
         """
         def off_any(func):
-            self._remove_listener(self._tree, func)
+            self._any_listeners[:] = [
+                listener
+                for listener in self._any_listeners
+                if listener.func != func
+            ]
 
             return func
 
@@ -179,92 +142,60 @@ class EventEmitter(object):
         """
         Removes all registered functions.
         """
-        self._tree = self._new_branch()
+        self._event_tree.clear()
+        del self._any_listeners[:]
 
     def listeners(self, event):
         """
-        Returns all functions that are registered to an event. Wildcards are not applied.
+        Returns all functions that are registered to an event.
         """
-        branch = self._find_branch(event)
-        if branch is None:
-            return []
-
-        return [listener.func for listener in branch[self.CB_KEY]]
+        return [listener.func for listener in self._event_tree.find_listeners(event)]
 
     def listeners_any(self):
         """
         Returns all functions that were registered using :py:meth:`on_any`.
         """
-        return [listener.func for listener in self._tree[self.CB_KEY]]
+        return [listener.func for listener in self._any_listeners]
 
     def listeners_all(self):
         """
-        Returns all registered functions.
+        Returns all registered functions, ordered by their registration time.
         """
-        listeners = list(self._tree[self.CB_KEY])
+        listeners = []
+        nodes = [self._event_tree]
+        while nodes:
+            node = nodes.pop(0)
+            listeners.extend(node.listeners)
+            nodes.extend(node.nodes.values())
 
-        branches = list(self._tree.values())
-        for b in branches:
-            if not isinstance(b, dict):
-                continue
-
-            branches.extend(b.values())
-
-            listeners.extend(b[self.CB_KEY])
+        # sort them
+        listeners = sorted(listeners, key=lambda listener: listener.time)
 
         return [listener.func for listener in listeners]
 
-    def _get_event_listeners(self, event):
-        """
-        Returns listeners registered for *event* in order of their registration time
-        and adjusts their :py:attr:`Listener.ttl` values if necessary.
-        """
-        parts = event.split(self.delimiter)
-
-        if self.CB_KEY in parts:
-            return
-
-        listeners = list(self._tree[self.CB_KEY])
-        branches = [self._tree]
-
-        for p in parts:
-            _branches = []
-            for branch in branches:
-                for k, b in branch.items():
-                    if k == self.CB_KEY:
-                        continue
-                    if k == p:
-                        _branches.append(b)
-                    elif self.wildcard and self.WC_CHAR in (p, k):
-                        _branches.append(b)
-            branches = _branches
-
-        for b in branches:
-            listeners.extend(b[self.CB_KEY])
-
-        # since listeners can emit events themselves, eagerly remove listeners whose ttl value is 0
-        for listener in listeners:
-            if listener.ttl == 0:
+    def _emit(self, event, *args, **kwargs):
+        # call listeners in order, keep track of awaitables from coroutines functions
+        awaitables = []
+        for listener in self._event_tree.find_listeners(event):
+            # since listeners can emit events themselves,
+            # deregister them before calling if needed
+            if listener.ttl == 1:
                 self.off(listener.event, func=listener.func)
 
-        # sort listeners by registration time
-        listeners = sorted(listeners, key=lambda listener: listener.time)
+            res = listener(*args, **kwargs)
+            if listener.is_coroutine:
+                awaitables.append(res)
 
-        return listeners
+        return awaitables
 
     def emit(self, event, *args, **kwargs):
         """
         Emits an *event*. All functions of events that match *event* are invoked with *args* and
-        *kwargs* in the exact order of their registration. Wildcards might be applied.
-
-        TODO: event loop
+        *kwargs* in the exact order of their registration, with the exception of async functions
+        that are invoked in a separate event loop.
         """
-        # call listeners in order, keep track of awaitables from coroutines functions
-        awaitables = []
-        for listener in self._get_event_listeners(event):
-            res = listener(*args, **kwargs)
-            if listener.is_coroutine:
-                awaitables.append(res)
+        # emit normal functions and get awaitables of async ones
+        awaitables = self._emit(event, *args, **kwargs)
 
         # handle awaitables
         if awaitables:
@@ -278,20 +209,146 @@ class EventEmitter(object):
 
     async def emit_async(self, event, *args, **kwargs):
         """
-        Awaitable version of :py:meth:`emit`.
-
-        This method does not start a new event loop.
+        Awaitable version of :py:meth:`emit`. However, this method does not start a new event loop
+        but uses the existing one.
         """
-        # call listeners in order, keep track of awaitables from coroutines functions
-        awaitables = []
-        for listener in self._get_event_listeners(event):
-            res = listener(*args, **kwargs)
-            if listener.is_coroutine:
-                awaitables.append(res)
+        # emit normal functions and get awaitables of async ones
+        awaitables = self._emit(event, *args, **kwargs)
 
         # handle awaitables
         if awaitables:
             await asyncio.gather(*awaitables)
+
+
+class BaseNode(object):
+
+    def __init__(self, wildcard, delimiter):
+        super().__init__()
+
+        self.wildcard = wildcard
+        self.delimiter = delimiter
+        self.parent = None
+        self.nodes = collections.OrderedDict()
+
+    def clear(self):
+        self.nodes.clear()
+
+    def add_node(self, node):
+        # when there is a node with the exact same name (pattern), merge listeners
+        if node.name in self.nodes:
+            _node = self.nodes[node.name]
+            _node.listeners.extend(node.listeners)
+            return _node
+
+        # otherwise add it and set its parent
+        self.nodes[node.name] = node
+        node.parent = self
+
+        return node
+
+
+class Node(BaseNode):
+    """
+    Actual named nodes containing listeners.
+    """
+
+    @classmethod
+    def str_is_pattern(cls, s):
+        return "*" in s or "?" in s
+
+    def __init__(self, name, *args):
+        super().__init__(*args)
+
+        self.name = name
+        self.listeners = []
+
+    def num_listeners(self, recursive=True):
+        n = len(self.listeners)
+
+        if recursive:
+            n += sum(node.num_listeners(recursive=recursive) for node in self.nodes.values())
+
+        return n
+
+    def remove_listeners_by_func(self, func):
+        self.listeners[:] = [listener for listener in self.listeners if listener.func != func]
+
+    def add_listener(self, listener):
+        self.listeners.append(listener)
+
+    def check_name(self, pattern):
+        if self.wildcard:
+            if self.str_is_pattern(pattern):
+                return fnmatch.fnmatch(self.name, pattern)
+            elif self.str_is_pattern(self.name):
+                return fnmatch.fnmatch(pattern, self.name)
+
+        return self.name == pattern
+
+    def find_nodes(self, event):
+        # trivial case
+        if not event:
+            return []
+
+        # parse event
+        if isinstance(event, (list, tuple)):
+            pattern, sub_patterns = event[0], event[1:]
+        else:
+            pattern, *sub_patterns = event.split(self.delimiter)
+
+        # first make sure that pattern matches _this_ name
+        if not self.check_name(pattern):
+            return []
+
+        # when there are no sub patterns, return this one
+        if not sub_patterns:
+            return [self]
+
+        # recursively match sub names with nodes
+        return sum((node.find_nodes(sub_patterns) for node in self.nodes.values()), [])
+
+
+class Tree(BaseNode):
+    """
+    Top-level node without a name or listeners, but providing higher-level node access.
+    """
+
+    def num_listeners(self):
+        return sum(node.num_listeners(recursive=True) for node in self.nodes.values())
+
+    def find_nodes(self, *args, **kwargs):
+        return sum((node.find_nodes(*args, **kwargs) for node in self.nodes.values()), [])
+
+    def add_listener(self, event, listener):
+        # add nodes without evaluating wildcards, this is done during node lookup only
+        names = event.split(self.delimiter)
+
+        # lookup the deepest existing parent
+        node = self
+        while names:
+            name = names.pop(0)
+            if name in node.nodes:
+                node = node.nodes[name]
+            else:
+                new_node = Node(name, self.wildcard, self.delimiter)
+                node.add_node(new_node)
+                node = new_node
+
+        # add the listeners
+        node.listeners.extend([listener])
+
+    def remove_listeners_by_func(self, event, func):
+        for node in self.find_nodes(event):
+            node.remove_listeners_by_func(func)
+
+    def find_listeners(self, event, sort=True):
+        listeners = sum((node.listeners for node in self.find_nodes(event)), [])
+
+        # sort by registration time
+        if sort:
+            listeners = sorted(listeners, key=lambda listener: listener.time)
+
+        return listeners
 
 
 class Listener(object):
@@ -301,7 +358,7 @@ class Listener(object):
     """
 
     def __init__(self, func, event, ttl):
-        super(Listener, self).__init__()
+        super().__init__()
 
         self.func = func
         self.event = event

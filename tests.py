@@ -7,28 +7,10 @@ import sys
 from pymitter import EventEmitter
 
 
-class EmitterProvider(object):
-
-    def ee1(self, **kwargs):
-        return EventEmitter(**kwargs)
-
-    def ee2(self, **kwargs):
-        return EventEmitter(wildcard=True, **kwargs)
-
-    def ee3(self, **kwargs):
-        return EventEmitter(wildcard=True, delimiter=":", **kwargs)
-
-    def ee4(self, **kwargs):
-        return EventEmitter(new_listener=True, **kwargs)
-
-    def ee5(self, **kwargs):
-        return EventEmitter(max_listeners=1, **kwargs)
-
-
-class SyncTestCase(unittest.TestCase, EmitterProvider):
+class SyncTestCase(unittest.TestCase):
 
     def test_callback_usage(self):
-        ee = self.ee1()
+        ee = EventEmitter()
         stack = []
 
         def handler(arg):
@@ -40,7 +22,7 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         self.assertTrue(stack[-1] == "callback_usage_foo")
 
     def test_decorator_usage(self):
-        ee = self.ee1()
+        ee = EventEmitter()
         stack = []
 
         @ee.on("decorator_usage")
@@ -51,7 +33,7 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         self.assertTrue(stack[-1] == "decorator_usage_bar")
 
     def test_ttl_on(self):
-        ee = self.ee1()
+        ee = EventEmitter()
         stack = []
 
         @ee.on("ttl_on", ttl=1)
@@ -65,7 +47,7 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         self.assertTrue(stack[-1] == "ttl_on_foo")
 
     def test_ttl_once(self):
-        ee = self.ee1()
+        ee = EventEmitter()
         stack = []
 
         @ee.once("ttl_once")
@@ -79,7 +61,7 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         self.assertTrue(stack[-1] == "ttl_once_foo")
 
     def test_on_all(self):
-        ee = self.ee2()
+        ee = EventEmitter(wildcard=True)
         stack = []
 
         @ee.on("on_all.*")
@@ -90,7 +72,7 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         self.assertTrue(stack[-1] == "on_all")
 
     def test_emit_all(self):
-        ee = self.ee2()
+        ee = EventEmitter(wildcard=True)
         stack = []
 
         @ee.on("emit_all.foo")
@@ -100,8 +82,32 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         ee.emit("emit_all.*")
         self.assertTrue(stack[-1] == "emit_all.foo")
 
+    def test_on_reverse_pattern(self):
+        ee = EventEmitter(wildcard=True)
+        stack = []
+
+        @ee.on("foo.bar")
+        def handler1():
+            stack.append("on_foo_bar")
+
+        @ee.on("foo.baz")
+        def handler2():
+            stack.append("on_foo_baz")
+
+        @ee.on("foo.bar.baz.test")
+        def handler3():
+            stack.append("on_foo_bar_baz_test")
+
+        ee.emit("foo.ba?")
+        self.assertTrue(stack[-2] == "on_foo_bar")
+        self.assertTrue(stack[-1] == "on_foo_baz")
+
+        del stack[:]
+        ee.emit("foo.bar.*.test")
+        self.assertTrue(stack[-1] == "on_foo_bar_baz_test")
+
     def test_delimiter(self):
-        ee = self.ee3()
+        ee = EventEmitter(wildcard=True, delimiter=":")
         stack = []
 
         @ee.on("delimiter:*")
@@ -112,7 +118,7 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         self.assertTrue(stack[-1] == "delimiter")
 
     def test_new(self):
-        ee = self.ee4()
+        ee = EventEmitter(new_listener=True)
         stack = []
 
         @ee.on("new_listener")
@@ -122,11 +128,13 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         def newhandler():
             pass
         ee.on("new", newhandler)
+        ee.on_any(newhandler)
 
-        self.assertTrue(stack[-1] == (newhandler, "new"))
+        self.assertTrue(stack[-2] == (newhandler, "new"))
+        self.assertTrue(stack[-1] == (newhandler, None))
 
     def test_max(self):
-        ee = self.ee5()
+        ee = EventEmitter(max_listeners=1)
         stack = []
 
         @ee.on("max")
@@ -140,13 +148,44 @@ class SyncTestCase(unittest.TestCase, EmitterProvider):
         ee.emit("max")
         self.assertTrue(stack[-1] == "max_1")
 
+    def test_tree(self):
+        ee = EventEmitter()
+        stack = []
+
+        @ee.on("max")
+        def handler1():
+            stack.append("max_1")
+
+        @ee.once("max")
+        def handler2():
+            stack.append("max_2")
+
+        self.assertEqual(ee.num_listeners, 2)
+        self.assertEqual(len(ee._event_tree.nodes["max"].listeners), 2)
+
+        ee.emit("max")
+        self.assertTrue(stack[-2] == "max_1")
+        self.assertTrue(stack[-1] == "max_2")
+        del stack[:]
+
+        ee.emit("max")
+        self.assertTrue(stack[-1] == "max_1")
+        del stack[:]
+
+        self.assertEqual(ee.num_listeners, 1)
+        self.assertTrue("max" in ee._event_tree.nodes)
+        self.assertEqual(len(ee._event_tree.nodes["max"].listeners), 1)
+
+        ee.off("max", handler1)
+        self.assertEqual(ee.num_listeners, 0)
+
 
 if sys.version_info[:2] >= (3, 8):
 
-    class AsyncTestCase(unittest.IsolatedAsyncioTestCase, EmitterProvider):
+    class AsyncTestCase(unittest.IsolatedAsyncioTestCase):
 
         def test_async_callback_usage(self):
-            ee = self.ee1()
+            ee = EventEmitter()
             stack = []
 
             async def handler(arg):
@@ -158,7 +197,7 @@ if sys.version_info[:2] >= (3, 8):
             self.assertTrue(stack[-1] == "async_callback_usage_foo")
 
         def test_async_decorator_usage(self):
-            ee = self.ee1()
+            ee = EventEmitter()
             stack = []
 
             @ee.on("async_decorator_usage")
@@ -169,7 +208,7 @@ if sys.version_info[:2] >= (3, 8):
             self.assertTrue(stack[-1] == "async_decorator_usage_bar")
 
         async def test_await_async_callback_usage(self):
-            ee = self.ee1()
+            ee = EventEmitter()
             stack = []
 
             async def handler(arg):
@@ -184,7 +223,7 @@ if sys.version_info[:2] >= (3, 8):
             self.assertTrue(stack[-1] == "await_async_callback_usage_foo")
 
         async def test_await_async_decorator_usage(self):
-            ee = self.ee1()
+            ee = EventEmitter()
             stack = []
 
             @ee.on("await_async_decorator_usage")
