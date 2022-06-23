@@ -23,7 +23,7 @@ Python port of the extended Node.js EventEmitter 2 approach of https://github.co
 pip install pymitter
 ```
 
-The last version with Python 2 support was v0.3.2 ([tag](https://github.com/riga/pymitter/tree/v0.3.2), [PypI](https://pypi.org/project/pymitter/0.3.2)).
+The last version with Python 2 support was [v0.3.2](https://github.com/riga/pymitter/tree/v0.3.2) ([PyPI](https://pypi.org/project/pymitter/0.3.2)).
 
 
 ## Examples
@@ -182,7 +182,7 @@ ee.emit("my_event.*")
 
 ## API
 
-### ``EventEmitter(wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
+### ``EventEmitter(*, wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
 
 EventEmitter constructor. **Note**: always use *kwargs* for configuration.
 When *wildcard* is *True*, wildcards are used as shown in [this example](#wildcards).
