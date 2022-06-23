@@ -77,6 +77,7 @@ class EventEmitter(object):
 
             # create a new listener and add it
             self._event_tree.add_listener(event, Listener(func, event, ttl))
+
             if self.new_listener and event != self.new_listener_event:
                 self.emit(self.new_listener_event, func, event)
 
@@ -104,6 +105,7 @@ class EventEmitter(object):
 
             # create a new listener and add it
             self._any_listeners.append(Listener(func, None, ttl))
+
             if self.new_listener:
                 self.emit(self.new_listener_event, func)
 
@@ -162,12 +164,12 @@ class EventEmitter(object):
         """
         Returns all registered functions, ordered by their registration time.
         """
-        listeners = []
-        nodes = [self._event_tree]
+        listeners = list(self._any_listeners)
+        nodes = list(self._event_tree.nodes.values())
         while nodes:
             node = nodes.pop(0)
-            listeners.extend(node.listeners)
             nodes.extend(node.nodes.values())
+            listeners.extend(node.listeners)
 
         # sort them
         listeners = sorted(listeners, key=lambda listener: listener.time)
@@ -175,9 +177,14 @@ class EventEmitter(object):
         return [listener.func for listener in listeners]
 
     def _emit(self, event: str, *args, **kwargs) -> List[Awaitable]:
+        listeners = self._event_tree.find_listeners(event)
+        if event != self.new_listener_event:
+            listeners.extend(self._any_listeners)
+        listeners = sorted(listeners, key=lambda listener: listener.time)
+
         # call listeners in order, keep track of awaitables from coroutines functions
         awaitables = []
-        for listener in self._event_tree.find_listeners(event):
+        for listener in listeners:
             # since listeners can emit events themselves,
             # deregister them before calling if needed
             if listener.ttl == 1:
