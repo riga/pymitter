@@ -343,7 +343,7 @@ class Tree(BaseNode):
                 node = new_node
 
         # add the listeners
-        node.listeners.extend([listener])
+        node.add_listener(listener)
 
     def remove_listeners_by_func(self, event: str, func: Callable) -> None:
         for node in self.find_nodes(event):

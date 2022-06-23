@@ -86,6 +86,40 @@ class SyncTestCase(unittest.TestCase):
         ee.emit("foo")
         self.assertEqual(tuple(stack), ("foo", "bar"))
 
+    def test_off_any(self):
+        ee = EventEmitter()
+        stack = []
+
+        @ee.on_any
+        def handler1():
+            stack.append("foo")
+
+        ee.emit("xyz")
+        self.assertEqual(tuple(stack), ("foo",))
+
+        del stack[:]
+        ee.off_any(handler1)
+
+        ee.emit("xyz")
+        self.assertEqual(tuple(stack), ())
+        self.assertEqual(ee.num_listeners, 0)
+
+    def test_off_all(self):
+        ee = EventEmitter()
+
+        @ee.on_any
+        def handler1():
+            pass
+
+        @ee.on("foo")
+        def handler2():
+            pass
+
+        self.assertEqual(ee.num_listeners, 2)
+
+        ee.off_all()
+        self.assertEqual(ee.num_listeners, 0)
+
     def test_listeners(self):
         ee = EventEmitter(wildcard=True)
 
