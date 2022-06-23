@@ -11,12 +11,16 @@ __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
 __status__ = "Development"
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 __all__ = ["EventEmitter", "Listener"]
 
 
+import sys
 import time
 import asyncio
+
+
+LE_PY36 = sys.version_info[:2] <= (3, 6)
 
 
 class EventEmitter(object):
@@ -210,10 +214,10 @@ class EventEmitter(object):
 
         return [listener.func for listener in listeners]
 
-    def emit(self, event, *args, **kwargs):
+    def _get_event_listeners(self, event):
         """
-        Emits an *event*. All functions of events that match *event* are invoked with *args* and
-        *kwargs* in the exact order of their registration. Wildcards might be applied.
+        Returns listeners registered for *event* in order of their registration time
+        and adjusts their :py:attr:`Listener.ttl` values if necessary.
         """
         parts = event.split(self.delimiter)
 
@@ -238,21 +242,56 @@ class EventEmitter(object):
         for b in branches:
             listeners.extend(b[self.CB_KEY])
 
-        # sort listeners by registration time
-        listeners = sorted(listeners, key=lambda listener: listener.time)
-
-        # call listeners in the order of their registration time
-        for listener in listeners:
-            coro = listener(*args, **kwargs)
-
-            # when the listener returned a coroutine, run it
-            if asyncio.iscoroutine(coro):
-                asyncio.run(coro)
-
-        # remove listeners whose ttl value is 0
+        # since listeners can emit events themselves, eagerly remove listeners whose ttl value is 0
         for listener in listeners:
             if listener.ttl == 0:
                 self.off(listener.event, func=listener.func)
+
+        # sort listeners by registration time
+        listeners = sorted(listeners, key=lambda listener: listener.time)
+
+        return listeners
+
+    def emit(self, event, *args, **kwargs):
+        """
+        Emits an *event*. All functions of events that match *event* are invoked with *args* and
+        *kwargs* in the exact order of their registration. Wildcards might be applied.
+
+        TODO: event loop
+        """
+        # call listeners in order, keep track of awaitables from coroutines functions
+        awaitables = []
+        for listener in self._get_event_listeners(event):
+            res = listener(*args, **kwargs)
+            if listener.is_coroutine:
+                awaitables.append(res)
+
+        # handle awaitables
+        if awaitables:
+            if LE_PY36:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(asyncio.gather(*awaitables))
+            else:
+                async def start():
+                    await asyncio.gather(*awaitables)
+                asyncio.run(start())
+
+    async def emit_async(self, event, *args, **kwargs):
+        """
+        Awaitable version of :py:meth:`emit`.
+
+        This method does not start a new event loop.
+        """
+        # call listeners in order, keep track of awaitables from coroutines functions
+        awaitables = []
+        for listener in self._get_event_listeners(event):
+            res = listener(*args, **kwargs)
+            if listener.is_coroutine:
+                awaitables.append(res)
+
+        # handle awaitables
+        if awaitables:
+            await asyncio.gather(*awaitables)
 
 
 class Listener(object):
@@ -269,7 +308,11 @@ class Listener(object):
         self.ttl = ttl
 
         # store the registration time
-        self.time = time.time()
+        self.time = time.monotonic()
+
+    @property
+    def is_coroutine(self):
+        return asyncio.iscoroutinefunction(self.func)
 
     def __call__(self, *args, **kwargs):
         """

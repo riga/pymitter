@@ -11,6 +11,7 @@ Python port of the extended Node.js EventEmitter 2 approach of https://github.co
 - Namespaces with wildcards
 - Times to listen (TTL)
 - Usage via decorators or callbacks
+- Coroutine support
 - Lightweight implementation, good performance
 
 
@@ -65,6 +66,47 @@ ee.emit("my_other_event", "bar")
 
 ee.emit("my_third_event", "baz")
 # -> "handler3 called with baz"
+```
+
+
+### Coroutines
+
+Wrapping `async` functions outside an event loop will start an internal event loop and calls to `emit` return synchronously.
+
+```python
+from pymitter import EventEmitter
+
+
+ee = EventEmitter()
+
+
+# register an async function
+@ee.on("my_event")
+async def handler1(arg):
+    print("handler1 called with", arg)
+
+
+# emit
+ee.emit("my_event", "foo")
+# -> "handler1 called with foo"
+```
+
+Wrapping `async` functions inside an event loop a will use the running event loop and `emit_async` is awaitable.
+
+```python
+from pymitter import EventEmitter
+
+
+ee = EventEmitter()
+
+
+async def main():
+    # emit_async
+    awaitable = ee.emit_async("my_event", "foo")
+    # -> nothing printed yet
+
+    await awaitable
+    # -> "handler1 called with foo"
 ```
 
 

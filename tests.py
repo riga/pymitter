@@ -1,147 +1,201 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
 import unittest
+import sys
 
 from pymitter import EventEmitter
 
 
-class AllTestCase(unittest.TestCase):
+class EmitterProvider(object):
 
-    def __init__(self, *args, **kwargs):
-        super(AllTestCase, self).__init__(*args, **kwargs)
+    def ee1(self, **kwargs):
+        return EventEmitter(**kwargs)
 
-        self.ee1 = EventEmitter()
-        self.ee2 = EventEmitter(wildcard=True)
-        self.ee3 = EventEmitter(wildcard=True, delimiter=":")
-        self.ee4 = EventEmitter(new_listener=True)
-        self.ee5 = EventEmitter(max_listeners=1)
+    def ee2(self, **kwargs):
+        return EventEmitter(wildcard=True, **kwargs)
 
-    def test_1_callback_usage(self):
+    def ee3(self, **kwargs):
+        return EventEmitter(wildcard=True, delimiter=":", **kwargs)
+
+    def ee4(self, **kwargs):
+        return EventEmitter(new_listener=True, **kwargs)
+
+    def ee5(self, **kwargs):
+        return EventEmitter(max_listeners=1, **kwargs)
+
+
+class SyncTestCase(unittest.TestCase, EmitterProvider):
+
+    def test_callback_usage(self):
+        ee = self.ee1()
         stack = []
 
         def handler(arg):
-            stack.append("1_callback_usage_" + arg)
+            stack.append("callback_usage_" + arg)
 
-        self.ee1.on("1_callback_usage", handler)
+        ee.on("callback_usage", handler)
 
-        self.ee1.emit("1_callback_usage", "foo")
-        self.assertTrue(stack[-1] == "1_callback_usage_foo")
+        ee.emit("callback_usage", "foo")
+        self.assertTrue(stack[-1] == "callback_usage_foo")
 
-    def test_1_decorator_usage(self):
+    def test_decorator_usage(self):
+        ee = self.ee1()
         stack = []
 
-        @self.ee1.on("1_decorator_usage")
+        @ee.on("decorator_usage")
         def handler(arg):
-            stack.append("1_decorator_usage_" + arg)
+            stack.append("decorator_usage_" + arg)
 
-        self.ee1.emit("1_decorator_usage", "bar")
-        self.assertTrue(stack[-1] == "1_decorator_usage_bar")
+        ee.emit("decorator_usage", "bar")
+        self.assertTrue(stack[-1] == "decorator_usage_bar")
 
-    def test_1_async_callback_usage(self):
+    def test_ttl_on(self):
+        ee = self.ee1()
         stack = []
 
-        async def handler(arg):
-            stack.append("1_async_callback_usage_" + arg)
-
-        self.ee1.on("1_async_callback_usage", handler)
-
-        self.ee1.emit("1_async_callback_usage", "foo")
-        self.assertTrue(stack[-1] == "1_async_callback_usage_foo")
-
-    def test_1_async_decorator_usage(self):
-        stack = []
-
-        @self.ee1.on("1_async_decorator_usage")
-        async def handler(arg):
-            stack.append("1_async_decorator_usage_" + arg)
-
-        self.ee1.emit("1_async_decorator_usage", "bar")
-        self.assertTrue(stack[-1] == "1_async_decorator_usage_bar")
-
-    def test_1_ttl_on(self):
-        stack = []
-
-        @self.ee1.on("1_ttl_on", ttl=1)
+        @ee.on("ttl_on", ttl=1)
         def handler(arg):
-            stack.append("1_ttl_on_" + arg)
+            stack.append("ttl_on_" + arg)
 
-        self.ee1.emit("1_ttl_on", "foo")
-        self.assertTrue(stack[-1] == "1_ttl_on_foo")
+        ee.emit("ttl_on", "foo")
+        self.assertTrue(stack[-1] == "ttl_on_foo")
 
-        self.ee1.emit("1_ttl_on", "bar")
-        self.assertTrue(stack[-1] == "1_ttl_on_foo")
+        ee.emit("ttl_on", "bar")
+        self.assertTrue(stack[-1] == "ttl_on_foo")
 
-    def test_1_ttl_once(self):
+    def test_ttl_once(self):
+        ee = self.ee1()
         stack = []
 
-        @self.ee1.once("1_ttl_once")
+        @ee.once("ttl_once")
         def handler(arg):
-            stack.append("1_ttl_once_" + arg)
+            stack.append("ttl_once_" + arg)
 
-        self.ee1.emit("1_ttl_once", "foo")
-        self.assertTrue(stack[-1] == "1_ttl_once_foo")
+        ee.emit("ttl_once", "foo")
+        self.assertTrue(stack[-1] == "ttl_once_foo")
 
-        self.ee1.emit("1_ttl_once", "bar")
-        self.assertTrue(stack[-1] == "1_ttl_once_foo")
+        ee.emit("ttl_once", "bar")
+        self.assertTrue(stack[-1] == "ttl_once_foo")
 
-    def test_2_on_all(self):
+    def test_on_all(self):
+        ee = self.ee2()
         stack = []
 
-        @self.ee2.on("2_on_all.*")
+        @ee.on("on_all.*")
         def handler():
-            stack.append("2_on_all")
+            stack.append("on_all")
 
-        self.ee2.emit("2_on_all.foo")
-        self.assertTrue(stack[-1] == "2_on_all")
+        ee.emit("on_all.foo")
+        self.assertTrue(stack[-1] == "on_all")
 
-    def test_2_emit_all(self):
+    def test_emit_all(self):
+        ee = self.ee2()
         stack = []
 
-        @self.ee2.on("2_emit_all.foo")
+        @ee.on("emit_all.foo")
         def handler():
-            stack.append("2_emit_all.foo")
+            stack.append("emit_all.foo")
 
-        self.ee2.emit("2_emit_all.*")
-        self.assertTrue(stack[-1] == "2_emit_all.foo")
+        ee.emit("emit_all.*")
+        self.assertTrue(stack[-1] == "emit_all.foo")
 
-    def test_3_delimiter(self):
+    def test_delimiter(self):
+        ee = self.ee3()
         stack = []
 
-        @self.ee3.on("3_delimiter:*")
+        @ee.on("delimiter:*")
         def handler():
-            stack.append("3_delimiter")
+            stack.append("delimiter")
 
-        self.ee3.emit("3_delimiter:foo")
-        self.assertTrue(stack[-1] == "3_delimiter")
+        ee.emit("delimiter:foo")
+        self.assertTrue(stack[-1] == "delimiter")
 
-    def test_4_new(self):
+    def test_new(self):
+        ee = self.ee4()
         stack = []
 
-        @self.ee4.on("new_listener")
+        @ee.on("new_listener")
         def handler(func, event=None):
             stack.append((func, event))
 
         def newhandler():
             pass
-        self.ee4.on("4_new", newhandler)
+        ee.on("new", newhandler)
 
-        self.assertTrue(stack[-1] == (newhandler, "4_new"))
+        self.assertTrue(stack[-1] == (newhandler, "new"))
 
-    def test_5_max(self):
+    def test_max(self):
+        ee = self.ee5()
         stack = []
 
-        @self.ee5.on("5_max")
+        @ee.on("max")
         def handler1():
-            stack.append("5_max_1")
+            stack.append("max_1")
 
-        @self.ee5.on("5_max")
+        @ee.on("max")
         def handler2():
-            stack.append("5_max_2")
+            stack.append("max_2")
 
-        self.ee5.emit("5_max")
-        self.assertTrue(stack[-1] == "5_max_1")
+        ee.emit("max")
+        self.assertTrue(stack[-1] == "max_1")
+
+
+if sys.version_info[:2] >= (3, 8):
+
+    class AsyncTestCase(unittest.IsolatedAsyncioTestCase, EmitterProvider):
+
+        def test_async_callback_usage(self):
+            ee = self.ee1()
+            stack = []
+
+            async def handler(arg):
+                stack.append("async_callback_usage_" + arg)
+
+            ee.on("async_callback_usage", handler)
+
+            ee.emit("async_callback_usage", "foo")
+            self.assertTrue(stack[-1] == "async_callback_usage_foo")
+
+        def test_async_decorator_usage(self):
+            ee = self.ee1()
+            stack = []
+
+            @ee.on("async_decorator_usage")
+            async def handler(arg):
+                stack.append("async_decorator_usage_" + arg)
+
+            ee.emit("async_decorator_usage", "bar")
+            self.assertTrue(stack[-1] == "async_decorator_usage_bar")
+
+        async def test_await_async_callback_usage(self):
+            ee = self.ee1()
+            stack = []
+
+            async def handler(arg):
+                stack.append("await_async_callback_usage_" + arg)
+
+            ee.on("await_async_callback_usage", handler)
+
+            res = ee.emit_async("await_async_callback_usage", "foo")
+            self.assertEqual(len(stack), 0)
+
+            await res
+            self.assertTrue(stack[-1] == "await_async_callback_usage_foo")
+
+        async def test_await_async_decorator_usage(self):
+            ee = self.ee1()
+            stack = []
+
+            @ee.on("await_async_decorator_usage")
+            async def handler(arg):
+                stack.append("await_async_decorator_usage_" + arg)
+
+            res = ee.emit_async("await_async_decorator_usage", "bar")
+            self.assertEqual(len(stack), 0)
+
+            await res
+            self.assertTrue(stack[-1] == "await_async_decorator_usage_bar")
 
 
 if __name__ == "__main__":
