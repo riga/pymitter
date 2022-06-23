@@ -179,8 +179,8 @@ ee.emit("my_event.*")
 # -> "handler3 called"
 ```
 
-## API
 
+## API
 
 ### ``EventEmitter(wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
 
@@ -234,8 +234,14 @@ Negative values mean infinity.
 - #### ``emit(event, *args, **kwargs)``
     Emits an event.
     All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
-    Wildcards might be applied.
+    Async functions are called in a new event loop.
     There is no return value.
+
+- #### ``(async) emit_async(event, *args, **kwargs)``
+    Emits an event.
+    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
+    Async functions are called in the outer event loop.
+    Returns an `Awaitable`.
 
 
 ## Development
