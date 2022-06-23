@@ -13,6 +13,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup python 3.9 🐍
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
       - name: Install dependencies ☕️
         run: |
           pip install -U pip
@@ -30,7 +35,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup python 🐍
+      - name: Setup python 3.9 🐍
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
@@ -64,7 +69,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Python ${{ matrix.python-version }} 🐍
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -85,20 +90,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup python 3.6 🐍
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.6
-
-      - name: Install dependencies ☕️
-        run: |
-          pip install -U pip
-          pip install -r requirements.txt
-          pip install -r requirements_test.txt
-
-      - name: Run coverage test
-        run: pytest --cov=pymitter --cov-report xml:coverage_36.xml tests.py
-
       - name: Setup python 3.9 🐍
         uses: actions/setup-python@v4
         with:
@@ -117,5 +108,5 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage_36.xml,./coverage_39.xml
+          files: ./coverage_39.xml
           flags: unittests

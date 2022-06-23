@@ -2,6 +2,7 @@
 
 [![Package Status](https://img.shields.io/pypi/v/pymitter.svg?style=flat)](https://pypi.python.org/pypi/pymitter) [![License](https://img.shields.io/github/license/riga/pymitter.svg)](https://github.com/riga/pymitter/blob/master/LICENSE)
 [![Lint and test](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml)
+[![codecov](https://codecov.io/gh/riga/pymitter/branch/master/graph/badge.svg?token=MePbStZF7U)](https://codecov.io/gh/riga/pymitter)
 
 Python port of the extended Node.js EventEmitter 2 approach of https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
