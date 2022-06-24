@@ -92,7 +92,7 @@ ee.emit("my_event", "foo")
 # -> "handler1 called with foo"
 ```
 
-Wrapping `async` functions inside an event loop a will use the running event loop and `emit_async` is awaitable.
+Wrapping `async` functions inside an event loop will use the same loop and `emit_async` is awaitable.
 
 ```python
 from pymitter import EventEmitter
