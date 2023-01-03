@@ -6,7 +6,7 @@ Python port of the extended Node.js EventEmitter 2 approach providing namespaces
 
 __author__ = "Marcel Rieger"
 __author_email__ = "github.riga@icloud.com"
-__copyright__ = "Copyright 2014-2022, Marcel Rieger"
+__copyright__ = "Copyright 2014-2023, Marcel Rieger"
 __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
