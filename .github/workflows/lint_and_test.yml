@@ -56,11 +56,37 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+    name: test (python ${{ matrix.python-version }})
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Setup Python ${{ matrix.python-version }} 🐍
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: Test 🎢
+        run: python -m unittest tests
+
+  test_legacy:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version:
+          - "3.6"
     name: test (python ${{ matrix.python-version }})
     steps:
       - name: Checkout 🛎️
