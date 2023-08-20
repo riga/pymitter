@@ -19,7 +19,7 @@ class SyncTestCase(unittest.TestCase):
         ee.on("callback_usage", handler)
 
         ee.emit("callback_usage", "foo")
-        self.assertTrue(stack[-1] == "callback_usage_foo")
+        self.assertTrue(tuple(stack) == ("callback_usage_foo",))
 
     def test_decorator_usage(self):
         ee = EventEmitter()
@@ -30,7 +30,7 @@ class SyncTestCase(unittest.TestCase):
             stack.append("decorator_usage_" + arg)
 
         ee.emit("decorator_usage", "bar")
-        self.assertTrue(stack[-1] == "decorator_usage_bar")
+        self.assertTrue(tuple(stack) == ("decorator_usage_bar",))
 
     def test_ttl_on(self):
         ee = EventEmitter()
@@ -41,10 +41,10 @@ class SyncTestCase(unittest.TestCase):
             stack.append("ttl_on_" + arg)
 
         ee.emit("ttl_on", "foo")
-        self.assertTrue(stack[-1] == "ttl_on_foo")
+        self.assertTrue(tuple(stack) == ("ttl_on_foo",))
 
         ee.emit("ttl_on", "bar")
-        self.assertTrue(stack[-1] == "ttl_on_foo")
+        self.assertTrue(tuple(stack) == ("ttl_on_foo",))
 
     def test_ttl_once(self):
         ee = EventEmitter()
@@ -55,21 +55,42 @@ class SyncTestCase(unittest.TestCase):
             stack.append("ttl_once_" + arg)
 
         ee.emit("ttl_once", "foo")
-        self.assertTrue(stack[-1] == "ttl_once_foo")
+        self.assertTrue(tuple(stack) == ("ttl_once_foo",))
 
         ee.emit("ttl_once", "bar")
-        self.assertTrue(stack[-1] == "ttl_once_foo")
+        self.assertTrue(tuple(stack) == ("ttl_once_foo",))
 
-    def test_on_all(self):
-        ee = EventEmitter(wildcard=True)
-        stack = []
+    def test_on_wildcards(self):
+        def hits(handle: str, emit: str) -> bool:
+            ee = EventEmitter(wildcard=True)
+            stack = []
+            token = object()
 
-        @ee.on("on_all.*")
-        def handler():
-            stack.append("on_all")
+            @ee.on(handle)
+            def handler():
+                stack.append(token)
 
-        ee.emit("on_all.foo")
-        self.assertTrue(stack[-1] == "on_all")
+            ee.emit(emit)
+            return tuple(stack) == (token,)
+
+        self.assertTrue(hits("on_all.*", "on_all.foo"))
+        self.assertTrue(hits("on_all.foo", "on_all.*"))
+        self.assertTrue(hits("on_all.*", "on_all.*"))
+
+        self.assertTrue(hits("on_all.foo.bar", "on_all.*.bar"))
+        self.assertTrue(hits("on_all.*.bar", "on_all.foo.bar"))
+
+        self.assertTrue(hits("on_all.fo?", "on_all.foo"))
+        self.assertTrue(hits("on_all.foo", "on_all.fo?"))
+        self.assertTrue(hits("on_all.?", "on_all.?"))
+
+        self.assertFalse(hits("on_all.f?", "on_all.foo"))
+        self.assertFalse(hits("on_all.foo", "on_all.f?"))
+        self.assertFalse(hits("on_all.f?", "on_all.?"))
+        self.assertFalse(hits("on_all.?", "on_all.f?"))
+
+        self.assertFalse(hits("on_all.foo.bar", "on_all.*"))
+        self.assertFalse(hits("on_all.*", "on_all.foo.bar"))
 
     def test_on_any(self):
         ee = EventEmitter()
@@ -177,12 +198,11 @@ class SyncTestCase(unittest.TestCase):
             stack.append("on_foo_bar_baz_test")
 
         ee.emit("foo.ba?")
-        self.assertTrue(stack[-2] == "on_foo_bar")
-        self.assertTrue(stack[-1] == "on_foo_baz")
+        self.assertTrue(tuple(stack) == ("on_foo_bar", "on_foo_baz"))
 
         del stack[:]
         ee.emit("foo.bar.*.test")
-        self.assertTrue(stack[-1] == "on_foo_bar_baz_test")
+        self.assertTrue(tuple(stack) == ("on_foo_bar_baz_test",))
 
     def test_delimiter(self):
         ee = EventEmitter(wildcard=True, delimiter=":")
@@ -193,7 +213,7 @@ class SyncTestCase(unittest.TestCase):
             stack.append("delimiter")
 
         ee.emit("delimiter:foo")
-        self.assertTrue(stack[-1] == "delimiter")
+        self.assertTrue(tuple(stack) == ("delimiter",))
 
     def test_new(self):
         ee = EventEmitter(new_listener=True)
@@ -208,8 +228,7 @@ class SyncTestCase(unittest.TestCase):
         ee.on("new", newhandler)
         ee.on_any(newhandler)
 
-        self.assertTrue(stack[-2] == (newhandler, "new"))
-        self.assertTrue(stack[-1] == (newhandler, None))
+        self.assertTrue(tuple(stack) == ((newhandler, "new"), (newhandler, None)))
 
     def test_max(self):
         ee = EventEmitter(max_listeners=1)
@@ -224,7 +243,7 @@ class SyncTestCase(unittest.TestCase):
             stack.append("max_2")
 
         ee.emit("max")
-        self.assertTrue(stack[-1] == "max_1")
+        self.assertTrue(tuple(stack) == ("max_1",))
 
     def test_tree(self):
         ee = EventEmitter()
@@ -242,12 +261,11 @@ class SyncTestCase(unittest.TestCase):
         self.assertEqual(len(ee._event_tree.nodes["max"].listeners), 2)
 
         ee.emit("max")
-        self.assertTrue(stack[-2] == "max_1")
-        self.assertTrue(stack[-1] == "max_2")
+        self.assertTrue(tuple(stack) == ("max_1", "max_2"))
         del stack[:]
 
         ee.emit("max")
-        self.assertTrue(stack[-1] == "max_1")
+        self.assertTrue(tuple(stack) == ("max_1",))
         del stack[:]
 
         self.assertEqual(ee.num_listeners, 1)
@@ -272,7 +290,7 @@ if sys.version_info[:2] >= (3, 8):
             ee.on("async_callback_usage", handler)
 
             ee.emit("async_callback_usage", "foo")
-            self.assertTrue(stack[-1] == "async_callback_usage_foo")
+            self.assertTrue(tuple(stack) == ("async_callback_usage_foo",))
 
         def test_async_decorator_usage(self):
             ee = EventEmitter()
@@ -283,7 +301,7 @@ if sys.version_info[:2] >= (3, 8):
                 stack.append("async_decorator_usage_" + arg)
 
             ee.emit("async_decorator_usage", "bar")
-            self.assertTrue(stack[-1] == "async_decorator_usage_bar")
+            self.assertTrue(tuple(stack) == ("async_decorator_usage_bar",))
 
         async def test_await_async_callback_usage(self):
             ee = EventEmitter()
@@ -298,7 +316,7 @@ if sys.version_info[:2] >= (3, 8):
             self.assertEqual(len(stack), 0)
 
             await res
-            self.assertTrue(stack[-1] == "await_async_callback_usage_foo")
+            self.assertTrue(tuple(stack) == ("await_async_callback_usage_foo",))
 
         async def test_await_async_decorator_usage(self):
             ee = EventEmitter()
@@ -312,7 +330,7 @@ if sys.version_info[:2] >= (3, 8):
             self.assertEqual(len(stack), 0)
 
             await res
-            self.assertTrue(stack[-1] == "await_async_decorator_usage_bar")
+            self.assertTrue(tuple(stack) == ("await_async_decorator_usage_bar",))
 
 
 if __name__ == "__main__":

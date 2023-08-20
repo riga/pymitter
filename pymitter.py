@@ -241,7 +241,7 @@ class BaseNode(object):
     def clear(self):
         self.nodes.clear()
 
-    def add_node(self, node: "Node"):
+    def add_node(self, node: "Node") -> "Node":
         # when there is a node with the exact same name (pattern), merge listeners
         if node.name in self.nodes:
             _node = self.nodes[node.name]
@@ -288,7 +288,7 @@ class Node(BaseNode):
         if self.wildcard:
             if self.str_is_pattern(pattern):
                 return fnmatch.fnmatch(self.name, pattern)
-            elif self.str_is_pattern(self.name):
+            if self.str_is_pattern(self.name):
                 return fnmatch.fnmatch(pattern, self.name)
 
         return self.name == pattern
