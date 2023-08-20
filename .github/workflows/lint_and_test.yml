@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         with:
           persist-credentials: false
 
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         with:
           persist-credentials: false
 
@@ -64,7 +64,7 @@ jobs:
     name: test (python ${{ matrix.python-version }})
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         with:
           persist-credentials: false
 
@@ -91,7 +91,7 @@ jobs:
     name: test (python ${{ matrix.python-version }})
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         with:
           persist-credentials: false
 
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         with:
           persist-credentials: false
 
