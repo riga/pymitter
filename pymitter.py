@@ -254,6 +254,27 @@ class BaseNode(object):
 
         return node
 
+    def walk_nodes(self) -> None:
+        queue = [
+            (name, [name], node)
+            for name, node in self.nodes.items()
+        ]
+        while queue:
+            name, path, node = queue.pop(0)
+
+            # get names of child names
+            child_names = list(node.nodes)
+
+            # yield the name, the path leading to the node and names of child nodes that can be
+            # adjusted in place by the outer context to change the traversal (similar to os.walk)
+            yield (name, tuple(path), child_names)
+
+            # add remaining child nodes
+            queue.extend([
+                (child_name, path + [child_name], node.nodes[child_name])
+                for child_name in child_names
+            ])
+
 
 class Node(BaseNode):
     """

@@ -60,6 +60,54 @@ class SyncTestCase(unittest.TestCase):
         ee.emit("ttl_once", "bar")
         self.assertTrue(tuple(stack) == ("ttl_once_foo",))
 
+    def test_walk_nodes(self):
+        # helper to recursively convert itertables to tuples
+        def t(iterable):
+            return tuple((obj if isinstance(obj, str) else t(obj)) for obj in iterable)
+
+        ee = EventEmitter()
+        self.assertEqual(
+            t(ee._event_tree.walk_nodes()),
+            (),
+        )
+
+        # normal traversal
+        ee.on("foo.bar.test")(lambda: None)
+        ee.on("foo.bar.test2")(lambda: None)
+        self.assertEqual(
+            t(ee._event_tree.walk_nodes()),
+            (
+                ("foo", ("foo",), ("bar",)),
+                ("bar", ("foo", "bar"), ("test", "test2")),
+                ("test", ("foo", "bar", "test"), ()),
+                ("test2", ("foo", "bar", "test2"), ()),
+            ),
+        )
+
+        # empty tree after removing all listeners
+        ee.off_all()
+        self.assertEqual(
+            t(ee._event_tree.walk_nodes()),
+            (),
+        )
+
+        # traversal with in-place updates
+        ee.on("foo.bar.test")(lambda: None)
+        ee.on("foo.bar.test2")(lambda: None)
+        stack = []
+        for name, path, children in ee._event_tree.walk_nodes():
+            stack.append(t((name, path, children)))
+            if name == "bar":
+                children.remove("test2")
+        self.assertEqual(
+            t(stack),
+            (
+                ("foo", ("foo",), ("bar",)),
+                ("bar", ("foo", "bar"), ("test", "test2")),
+                ("test", ("foo", "bar", "test"), ()),
+            ),
+        )
+
     def test_on_wildcards(self):
         def hits(handle: str, emit: str) -> bool:
             ee = EventEmitter(wildcard=True)
