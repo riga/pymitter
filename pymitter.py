@@ -227,6 +227,18 @@ class EventEmitter(object):
         if awaitables:
             await asyncio.gather(*awaitables)
 
+    def emit_future(self, event: str, *args, **kwargs) -> None:
+        """
+        Deferred version of :py:meth:`emit` with all awaitable events being places at the end of the
+        existing event loop (using :py:func:`asyncio.ensure_future`).
+        """
+        # emit normal functions and get awaitables of async ones
+        awaitables = self._emit(event, *args, **kwargs)
+
+        # handle awaitables
+        if awaitables:
+            asyncio.ensure_future(asyncio.gather(*awaitables))
+
 
 class BaseNode(object):
 

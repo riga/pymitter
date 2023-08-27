@@ -112,6 +112,8 @@ async def main():
     # -> "handler1 called with foo"
 ```
 
+Use `emit_future` to not return awaitable objects but to place them at the end of the existing event loop (using `asyncio.ensure_future` internally).
+
 
 ### TTL (times to listen)
 
@@ -185,66 +187,72 @@ ee.emit("my_event.*")
 
 ## API
 
-### ``EventEmitter(*, wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)``
+### `EventEmitter(*, wildcard=False, delimiter=".", new_listener=False, max_listeners=-1)`
 
 EventEmitter constructor. **Note**: always use *kwargs* for configuration.
 When *wildcard* is *True*, wildcards are used as shown in [this example](#wildcards).
 *delimiter* is used to seperate namespaces within events.
 If *new_listener* is *True*, the *"new_listener"* event is emitted every time a new listener is registered.
-Functions listening to this event are passed ``(func, event=None)``.
+Functions listening to this event are passed `(func, event=None)`.
 *max_listeners* defines the maximum number of listeners per event.
 Negative values mean infinity.
 
-- #### ``on(event, func=None, ttl=-1)``
+- #### `on(event, func=None, ttl=-1)`
     Registers a function to an event.
     When *func* is *None*, decorator usage is assumed.
     *ttl* defines the times to listen. Negative values mean infinity.
     Returns the function.
 
-- #### ``once(event, func=None)``
-    Registers a function to an event with ``ttl = 1``.
+- #### `once(event, func=None)`
+    Registers a function to an event with `ttl = 1`.
     When *func* is *None*, decorator usage is assumed.
     Returns the function.
 
-- #### ``on_any(func=None)``
+- #### `on_any(func=None)`
     Registers a function that is called every time an event is emitted.
     When *func* is *None*, decorator usage is assumed.
     Returns the function.
 
-- #### ``off(event, func=None)``
+- #### `off(event, func=None)`
     Removes a function that is registered to an event.
     When *func* is *None*, decorator usage is assumed.
     Returns the function.
 
-- #### ``off_any(func=None)``
-    Removes a function that was registered via ``on_any()``.
+- #### `off_any(func=None)`
+    Removes a function that was registered via `on_any()`.
     When *func* is *None*, decorator usage is assumed.
     Returns the function.
 
-- #### ``off_all()``
+- #### `off_all()`
     Removes all functions of all events.
 
-- #### ``listeners(event)``
+- #### `listeners(event)`
     Returns all functions that are registered to an event.
     Wildcards are not applied.
 
-- #### ``listeners_any()``
-    Returns all functions that were registered using ``on_any()``.
+- #### `listeners_any()`
+    Returns all functions that were registered using `on_any()`.
 
-- #### ``listeners_all()``
+- #### `listeners_all()`
     Returns all registered functions.
 
-- #### ``emit(event, *args, **kwargs)``
+- #### `emit(event, *args, **kwargs)`
     Emits an event.
     All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
     Async functions are called in a new event loop.
     There is no return value.
 
-- #### ``(async) emit_async(event, *args, **kwargs)``
+- #### `(async) emit_async(event, *args, **kwargs)`
     Emits an event.
     All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
-    Async functions are called in the outer event loop.
+    Awaitable objects returned by async functions are awaited in the outer event loop.
     Returns an `Awaitable`.
+
+- #### `emit_future(event, *args, **kwargs)`
+    Emits an event.
+    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
+    Awaitable objects returned by async functions are placed at the end of the event loop using `asyncio.ensure_future`.
+    There is no return value.
 
 
 ## Development

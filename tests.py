@@ -3,6 +3,7 @@
 
 import unittest
 import sys
+import asyncio
 
 from pymitter import EventEmitter
 
@@ -338,7 +339,7 @@ if sys.version_info[:2] >= (3, 8):
             ee.on("async_callback_usage", handler)
 
             ee.emit("async_callback_usage", "foo")
-            self.assertTrue(tuple(stack) == ("async_callback_usage_foo",))
+            self.assertEqual(tuple(stack), ("async_callback_usage_foo",))
 
         def test_async_decorator_usage(self):
             ee = EventEmitter()
@@ -349,7 +350,7 @@ if sys.version_info[:2] >= (3, 8):
                 stack.append("async_decorator_usage_" + arg)
 
             ee.emit("async_decorator_usage", "bar")
-            self.assertTrue(tuple(stack) == ("async_decorator_usage_bar",))
+            self.assertEqual(tuple(stack), ("async_decorator_usage_bar",))
 
         async def test_await_async_callback_usage(self):
             ee = EventEmitter()
@@ -364,7 +365,7 @@ if sys.version_info[:2] >= (3, 8):
             self.assertEqual(len(stack), 0)
 
             await res
-            self.assertTrue(tuple(stack) == ("await_async_callback_usage_foo",))
+            self.assertEqual(tuple(stack), ("await_async_callback_usage_foo",))
 
         async def test_await_async_decorator_usage(self):
             ee = EventEmitter()
@@ -378,7 +379,26 @@ if sys.version_info[:2] >= (3, 8):
             self.assertEqual(len(stack), 0)
 
             await res
-            self.assertTrue(tuple(stack) == ("await_async_decorator_usage_bar",))
+            self.assertEqual(tuple(stack), ("await_async_decorator_usage_bar",))
+
+        async def test_emit_future(self):
+            ee = EventEmitter()
+            stack = []
+
+            @ee.on("emit_future")
+            async def handler(arg):
+                stack.append("emit_future_" + arg)
+
+            async def test():
+                ee.emit_future("emit_future", "bar")
+                self.assertEqual(len(stack), 0)
+
+                # let all non-deferred events on the event loop pass
+                await asyncio.sleep(0)
+
+                self.assertEqual(tuple(stack), ("emit_future_bar",))
+
+            await test()
 
 
 if __name__ == "__main__":
