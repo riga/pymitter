@@ -12,10 +12,15 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup python 🐍
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
       - name: Bundle 📦
         run: python setup.py sdist
 
-      - name: Publish package 🐍
+      - name: Publish package ⬆️
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
