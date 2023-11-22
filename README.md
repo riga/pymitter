@@ -1,7 +1,7 @@
 <!-- marker-before-logo -->
 
 <p align="center">
-  <img src="https://media.githubusercontent.com/media/riga/pymitter/master/assets/logo250.png" />
+  <img src="https://media.githubusercontent.com/media/riga/pymitter/master/assets/logo.png" width="400" />
 </p>
 
 <!-- marker-after-logo -->

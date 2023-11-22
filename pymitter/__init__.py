@@ -13,18 +13,14 @@ __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
 __status__ = "Development"
-__version__ = "0.4.2"
+__version__ = "0.5.0"
 __all__ = ["EventEmitter", "Listener"]
 
-import sys
 import time
 import collections
 import fnmatch
 import asyncio
 from typing import Callable, Awaitable, Sequence, Any
-
-
-LE_PY36 = sys.version_info[:2] <= (3, 6)
 
 
 class EventEmitter(object):
