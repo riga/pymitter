@@ -1,0 +1,11 @@
+/* custom styles */
+
+div#site-navigation img.logo {
+    width: 250px !important;
+    height: 55px !important;
+    max-height: none !important;
+}
+
+div#site-navigation div.navbar_extra_footer {
+    display: none;
+}

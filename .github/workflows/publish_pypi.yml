@@ -7,8 +7,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@master
+      - name: Checkout ⬇️
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
@@ -17,10 +17,15 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Bundle 📦
-        run: python setup.py sdist
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip setuptools
+          pip install -U twine build
 
-      - name: Publish package ⬆️
+      - name: Bundle 📦
+        run: python -m build
+
+      - name: Publish package 🐍
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__

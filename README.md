@@ -1,13 +1,46 @@
-# pymitter
+<!-- marker-before-logo -->
 
-[![Package status](https://img.shields.io/pypi/v/pymitter.svg?style=flat)](https://pypi.python.org/pypi/pymitter)
-[![License](https://img.shields.io/github/license/riga/pymitter.svg)](https://github.com/riga/pymitter/blob/master/LICENSE)
-[![Lint and test](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml)
-[![Code coverage](https://codecov.io/gh/riga/pymitter/branch/master/graph/badge.svg?token=MePbStZF7U)](https://codecov.io/gh/riga/pymitter)
-[![PyPI downloads](https://img.shields.io/pypi/dm/pymitter.svg)](https://pypi.python.org/pypi/pymitter)
+<p align="center">
+  <img src="https://media.githubusercontent.com/media/riga/pymitter/master/assets/logo250.png" />
+</p>
+
+<!-- marker-after-logo -->
+
+<!-- marker-before-badges -->
+
+<p align="center">
+  <a href="http://pymitter.readthedocs.io">
+    <img alt="Documentation status" src="https://readthedocs.org/projects/pymitter/badge/?version=latest" />
+  </a>
+  <img alt="Python version" src="https://img.shields.io/badge/Python-%E2%89%A53.7-blue" />
+  <a href="https://pypi.python.org/pypi/pymitter">
+    <img alt="Package version" src="https://img.shields.io/pypi/v/pymitter.svg?style=flat" />
+  </a>
+  <a href="https://pypi.python.org/pypi/pymitter">
+    <img alt="Package downloads" src="https://img.shields.io/pypi/dm/pymitter.svg" />
+  </a>
+  <a href="https://codecov.io/gh/riga/pymitter">
+    <img alt="Code coverge" src="https://codecov.io/gh/riga/pymitter/branch/master/graph/badge.svg?token=MePbStZF7U" />
+  </a>
+  <a href="https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml">
+    <img alt="Build status" src="https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml/badge.svg" />
+  </a>
+  <a href="https://github.com/riga/pymitter/blob/master/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/riga/pymitter.svg" />
+  </a>
+</p>
+
+<!-- marker-after-badges -->
+
+<!-- marker-before-header -->
 
 Python port of the extended Node.js EventEmitter 2 approach of https://github.com/asyncly/EventEmitter2 providing namespaces, wildcards and TTL.
 
+Original source hosted at [GitHub](https://github.com/riga/pymitter).
+
+<!-- marker-after-header -->
+
+<!-- marker-before-body -->
 
 ## Features
 
@@ -20,7 +53,7 @@ Python port of the extended Node.js EventEmitter 2 approach of https://github.co
 
 ## Installation
 
-*pymitter* is a registered [PyPI module](https://pypi.python.org/pypi/pymitter), so the installation with *pip* is quite easy:
+Simply install via [pip](https://pypi.python.org/pypi/pymitter):
 
 ```shell
 pip install pymitter
@@ -260,3 +293,5 @@ Negative values mean infinity.
 - Source hosted at [GitHub](https://github.com/riga/pymitter)
 - Python module hosted at [PyPI](https://pypi.python.org/pypi/pymitter)
 - Report issues, questions, feature requests on [GitHub Issues](https://github.com/riga/pymitter/issues)
+
+<!-- marker-after-body -->

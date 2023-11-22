@@ -22,10 +22,10 @@ jobs:
         run: |
           pip install -U pip
           pip install -r requirements.txt
-          pip install -r requirements_test.txt
+          pip install -r requirements_dev.txt
 
       - name: Lint 🔍
-        run: flake8 pymitter.py setup.py tests.py examples.py
+        run: flake8 pymitter tests examples.py
 
   pypi:
     runs-on: ubuntu-latest
@@ -42,14 +42,14 @@ jobs:
 
       - name: Install dependencies ☕️
         run: |
-          pip install -U pip
-          pip install twine
+          pip install -U pip setuptools
+          pip install -U twine build
 
       - name: Check bundling 📦
-        run: python setup.py sdist
+        run: python -m build
 
       - name: Check setup 🚦
-        run: twine check "dist/$( python setup.py --fullname ).tar.gz"
+        run: twine check "dist/pymitter-*.tar.gz"
 
   test:
     runs-on: ubuntu-latest
@@ -61,6 +61,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
     name: test (python ${{ matrix.python-version }})
     steps:
       - name: Checkout 🛎️
@@ -75,39 +76,12 @@ jobs:
 
       - name: Install dependencies ☕️
         run: |
-          pip install -U pip
+          pip install -U pip setuptools
           pip install -r requirements.txt
-          pip install -r requirements_test.txt
+          pip install -r requirements_dev.txt
 
       - name: Test 🎢
-        run: python -m unittest tests
-
-  test_legacy:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        python-version:
-          - "3.6"
-    name: test (python ${{ matrix.python-version }})
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@master
-        with:
-          persist-credentials: false
-
-      - name: Setup Python ${{ matrix.python-version }} 🐍
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies ☕️
-        run: |
-          pip install -U pip
-          pip install -r requirements.txt
-          pip install -r requirements_test.txt
-
-      - name: Test 🎢
-        run: python -m unittest tests
+        run: pytest tests
 
   coverage:
     runs-on: ubuntu-latest
@@ -124,12 +98,12 @@ jobs:
 
       - name: Install dependencies ☕️
         run: |
-          pip install -U pip
+          pip install -U pip setuptools
           pip install -r requirements.txt
-          pip install -r requirements_test.txt
+          pip install -r requirements_dev.txt
 
       - name: Run coverage test 🎢
-        run: pytest --cov=pymitter --cov-report xml:coverage_39.xml tests.py
+        run: pytest --cov=pymitter --cov-report xml:coverage_39.xml tests
 
       - name: Upload report 🔝
         uses: codecov/codecov-action@v2
