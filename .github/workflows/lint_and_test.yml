@@ -49,7 +49,7 @@ jobs:
         run: python -m build
 
       - name: Check setup 🚦
-        run: twine check "dist/scinum-*.tar.gz"
+        run: twine check "dist/pymitter-*.tar.gz"
 
   test:
     runs-on: ubuntu-latest
