@@ -1,0 +1,65 @@
+[build-system]
+
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+
+name = "pymitter"
+description = "Python port of the extended Node.js EventEmitter 2 approach providing namespaces, wildcards and TTL."
+authors = [
+    {name = "Marcel Rieger", email = "github.riga@icloud.com"},
+]
+keywords = [
+    "event",
+    "emitter",
+    "eventemitter",
+    "wildcard",
+    "node",
+    "nodejs",
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
+]
+license = {file = "LICENSE"}
+requires-python = ">=3.7"
+dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
+
+
+[project.urls]
+
+Homepage = "https://github.com/riga/pymitter"
+Documentation = "https://pymitter.readthedocs.io"
+Repository = "https://github.com/riga/pymitter.git"
+
+
+[tool.setuptools.dynamic]
+
+version = {attr = "pymitter.__init__.__version__"}
+readme = {file = ["README.md"], content-type = "text/markdown"}
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = {file = ["requirements_dev.txt"]}}
+
+
+[tool.setuptools]
+
+include-package-data = false
+
+
+[tool.setuptools.packages.find]
+
+include = ["pymitter"]
+exclude = ["tests/*"]

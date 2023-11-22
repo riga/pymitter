@@ -4,6 +4,8 @@
 *.log
 *.DS_Store
 dist
+__pycache__
 MANIFEST
 .coverage
 coverage.xml
+docs/_build

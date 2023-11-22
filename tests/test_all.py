@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8
 
 import unittest
@@ -399,7 +398,3 @@ if sys.version_info[:2] >= (3, 8):
                 self.assertEqual(tuple(stack), ("emit_future_bar",))
 
             await test()
-
-
-if __name__ == "__main__":
-    unittest.main()

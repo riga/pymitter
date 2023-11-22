@@ -1,0 +1,4 @@
+flake8>=4.0
+flake8-commas>=2.1
+flake8-quotes>=3.3
+pytest-cov>=3.0

@@ -1,2 +1,3 @@
-include pymitter.py setup.py requirements.txt README.md LICENSE .flake8
-global-exclude *.py[cod] __pycache__
+graft pymitter
+include requirements.txt requirements_dev.txt README.md LICENSE .flake8
+global-exclude *.py[cod] __pycache__ .github tests/*
