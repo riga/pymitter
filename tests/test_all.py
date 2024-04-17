@@ -398,3 +398,16 @@ if sys.version_info[:2] >= (3, 8):
                 self.assertEqual(tuple(stack), ("emit_future_bar",))
 
             await test()
+
+        def test_supports_async_callables(self):
+            ee = EventEmitter()
+            stack = []
+
+            class EventHandler:
+                async def __call__(self, arg):
+                    stack.append(arg)
+
+            ee.on("event", EventHandler())
+
+            ee.emit("event", "arg")
+            self.assertEqual(stack, ["arg"])
