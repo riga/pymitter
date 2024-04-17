@@ -193,7 +193,7 @@ class EventEmitter(object):
                 self.off(listener.event, func=listener.func)
 
             res = listener(*args, **kwargs)
-            if listener.is_coroutine:
+            if listener.is_coroutine or listener.is_async_callable:
                 awaitables.append(res)
 
         return awaitables
@@ -409,6 +409,10 @@ class Listener(object):
     @property
     def is_coroutine(self: Listener) -> bool:
         return asyncio.iscoroutinefunction(self.func)
+
+    @property
+    def is_async_callable(self):
+        return hasattr(self.func, "__call__") and asyncio.iscoroutinefunction(self.func.__call__)
 
     def __call__(self: Listener, *args, **kwargs) -> Any:
         """
