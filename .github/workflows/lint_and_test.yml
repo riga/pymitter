@@ -54,6 +54,7 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version:
           - "3.8"
@@ -86,6 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        fail-fast: false
         python-version:
           - "3.7"
           - "3.8"
