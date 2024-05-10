@@ -51,6 +51,37 @@ jobs:
       - name: Check setup 🚦
         run: twine check "dist/pymitter-*.tar.gz"
 
+  typecheck:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+    name: typecheck (python ${{ matrix.python-version }})
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@master
+        with:
+          persist-credentials: false
+
+      - name: Setup Python ${{ matrix.python-version }} 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip setuptools
+          pip install -r requirements.txt
+          pip install -r requirements_dev.txt
+
+      - name: Typecheck 🥊
+        run: mypy --config-file pyproject.toml pymitter
+
   test:
     runs-on: ubuntu-latest
     strategy:

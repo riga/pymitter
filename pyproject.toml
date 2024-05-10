@@ -63,3 +63,8 @@ include-package-data = false
 
 include = ["pymitter"]
 exclude = ["tests/*"]
+
+
+[tool.mypy]
+
+exclude = '(?x)(docs|tests)'

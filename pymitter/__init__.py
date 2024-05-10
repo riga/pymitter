@@ -17,10 +17,9 @@ __version__ = "0.5.1"
 __all__ = ["EventEmitter", "Listener"]
 
 import time
-import collections
 import fnmatch
 import asyncio
-from typing import Callable, Awaitable, Sequence, Any
+from typing import Callable, Awaitable, Sequence, Any, Generator
 
 
 class EventEmitter(object):
@@ -55,7 +54,7 @@ class EventEmitter(object):
         self._event_tree = Tree(wildcard=wildcard, delimiter=delimiter)
 
         # flat list of listeners triggerd on "any" event
-        self._any_listeners = []
+        self._any_listeners: list[Listener] = []
 
     @property
     def num_listeners(self) -> int:
@@ -85,7 +84,7 @@ class EventEmitter(object):
 
             return func
 
-        return on(func) if func else on
+        return on(func) if func else on  # type: ignore[return-value]
 
     def once(self, event: str, func: Callable | None = None) -> Callable:
         """
@@ -106,14 +105,14 @@ class EventEmitter(object):
                 return func
 
             # create a new listener and add it
-            self._any_listeners.append(Listener(func, None, ttl))
+            self._any_listeners.append(Listener(func, "", ttl))
 
             if self.new_listener:
                 self.emit(self.new_listener_event, func)
 
             return func
 
-        return on_any(func) if func else on_any
+        return on_any(func) if func else on_any  # type: ignore[return-value]
 
     def off(self, event: str, func: Callable | None = None) -> Callable:
         """
@@ -125,7 +124,7 @@ class EventEmitter(object):
 
             return func
 
-        return off(func) if func else off
+        return off(func) if func else off  # type: ignore[return-value]
 
     def off_any(self, func: Callable | None = None) -> Callable:
         """
@@ -141,7 +140,7 @@ class EventEmitter(object):
 
             return func
 
-        return off_any(func) if func else off_any
+        return off_any(func) if func else off_any  # type: ignore[return-value]
 
     def off_all(self) -> None:
         """
@@ -213,7 +212,7 @@ class EventEmitter(object):
                 await asyncio.gather(*awaitables)
             asyncio.run(start())
 
-    async def emit_async(self, event: str, *args, **kwargs) -> Awaitable:
+    async def emit_async(self, event: str, *args, **kwargs) -> None:
         """
         Awaitable version of :py:meth:`emit`. However, this method does not start a new event loop
         but uses the existing one.
@@ -246,7 +245,7 @@ class BaseNode(object):
         self.wildcard = wildcard
         self.delimiter = delimiter
         self.parent = None
-        self.nodes = collections.OrderedDict()
+        self.nodes: dict[str, Node] = {}
 
     def clear(self) -> None:
         self.nodes.clear()
@@ -260,11 +259,11 @@ class BaseNode(object):
 
         # otherwise add it and set its parent
         self.nodes[node.name] = node
-        node.parent = self
+        node.parent = self  # type: ignore[assignment]
 
         return node
 
-    def walk_nodes(self) -> None:
+    def walk_nodes(self) -> Generator[tuple[str, tuple[str, ...], list[str]], None, None]:
         queue = [
             (name, [name], node)
             for name, node in self.nodes.items()
@@ -299,7 +298,7 @@ class Node(BaseNode):
         super().__init__(*args)
 
         self.name = name
-        self.listeners = []
+        self.listeners: list[Listener] = []
 
     def num_listeners(self, recursive: bool = True) -> int:
         n = len(self.listeners)
@@ -312,7 +311,7 @@ class Node(BaseNode):
     def remove_listeners_by_func(self, func: Callable) -> None:
         self.listeners[:] = [listener for listener in self.listeners if listener.func != func]
 
-    def add_listener(self, listener: "Listener") -> None:
+    def add_listener(self, listener: Listener) -> None:
         self.listeners.append(listener)
 
     def check_name(self, pattern: str) -> bool:
@@ -333,7 +332,7 @@ class Node(BaseNode):
         if isinstance(event, (list, tuple)):
             pattern, sub_patterns = event[0], event[1:]
         else:
-            pattern, *sub_patterns = event.split(self.delimiter)
+            pattern, *sub_patterns = event.split(self.delimiter)  # type: ignore[attr-defined]
 
         # first make sure that pattern matches _this_ name
         if not self.check_name(pattern):
@@ -358,7 +357,7 @@ class Tree(BaseNode):
     def find_nodes(self, *args, **kwargs) -> list[Node]:
         return sum((node.find_nodes(*args, **kwargs) for node in self.nodes.values()), [])
 
-    def add_listener(self, event: str, listener: "Listener") -> None:
+    def add_listener(self, event: str, listener: Listener) -> None:
         # add nodes without evaluating wildcards, this is done during node lookup only
         names = event.split(self.delimiter)
 
@@ -367,20 +366,20 @@ class Tree(BaseNode):
         while names:
             name = names.pop(0)
             if name in node.nodes:
-                node = node.nodes[name]
+                node = node.nodes[name]  # type: ignore[assignment]
             else:
                 new_node = Node(name, self.wildcard, self.delimiter)
                 node.add_node(new_node)
-                node = new_node
+                node = new_node  # type: ignore[assignment]
 
         # add the listeners
-        node.add_listener(listener)
+        node.add_listener(listener)  # type: ignore[arg-type, call-arg]
 
     def remove_listeners_by_func(self, event: str, func: Callable) -> None:
         for node in self.find_nodes(event):
             node.remove_listeners_by_func(func)
 
-    def find_listeners(self, event: str, sort: bool = True) -> list["Listener"]:
+    def find_listeners(self, event: str, sort: bool = True) -> list[Listener]:
         listeners = sum((node.listeners for node in self.find_nodes(event)), [])
 
         # sort by registration time
