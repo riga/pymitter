@@ -1,5 +1,6 @@
 mypy~=1.9.0;python_version>="3.8"
-flake8~=7.0
+flake8~=7.0.0;python_version>="3.8"
+flake8~=5.0.0;python_version<"3.8"
 flake8-commas~=2.1.0
 flake8-quotes~=3.3.2
 types-docutils~=0.20.0
