@@ -26,7 +26,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 T = TypeVar("T")
 
 
-class EventEmitter(object):
+class EventEmitter:
     """
     The EventEmitter class, ported from Node.js EventEmitter 2.
 
@@ -48,8 +48,6 @@ class EventEmitter(object):
         new_listener: bool = False,
         max_listeners: int = -1,
     ) -> None:
-        super().__init__()
-
         # store attributes
         self.new_listener = new_listener
         self.max_listeners = max_listeners
@@ -267,10 +265,8 @@ class EventEmitter(object):
             asyncio.ensure_future(asyncio.gather(*awaitables))
 
 
-class BaseNode(object):
+class BaseNode:
     def __init__(self, wildcard: bool, delimiter: str) -> None:
-        super().__init__()
-
         self.wildcard = wildcard
         self.delimiter = delimiter
         self.parent: "Optional[BaseNode]" = None
@@ -418,15 +414,13 @@ class Tree(BaseNode):
         return listeners
 
 
-class Listener(object):
+class Listener:
     """
     A simple event listener class that wraps a function *func* for a specific *event* and that keeps
     track of the times to listen left.
     """
 
     def __init__(self, func: Callable[..., Any], event: str, ttl: int) -> None:
-        super().__init__()
-
         self.func = func
         self.event = event
         self.ttl = ttl
