@@ -8,7 +8,7 @@ from __future__ import annotations
 
 __author__ = "Marcel Rieger"
 __author_email__ = "github.riga@icloud.com"
-__copyright__ = "Copyright 2014-2024, Marcel Rieger"
+__copyright__ = "Copyright 2014-2025, Marcel Rieger"
 __credits__ = ["Marcel Rieger"]
 __contact__ = "https://github.com/riga/pymitter"
 __license__ = "BSD-3-Clause"
@@ -63,9 +63,12 @@ class EventEmitter:
         return self._event_tree.num_listeners() + len(self._any_listeners)
 
     @overload
-    def on(self, event: str, func: F, *, ttl: int = -1) -> F: ...
+    def on(self, event: str, func: F, *, ttl: int = -1) -> F:
+        ...
+
     @overload
-    def on(self, event: str, *, ttl: int = -1) -> Callable[[F], F]: ...
+    def on(self, event: str, *, ttl: int = -1) -> Callable[[F], F]:
+        ...
 
     def on(
         self,
@@ -95,9 +98,12 @@ class EventEmitter:
         return on(func) if func else on
 
     @overload
-    def once(self, event: str, func: F) -> F: ...
+    def once(self, event: str, func: F) -> F:
+        ...
+
     @overload
-    def once(self, event: str) -> Callable[[F], F]: ...
+    def once(self, event: str) -> Callable[[F], F]:
+        ...
 
     def once(self, event: str, func: Optional[F] = None):
         """
@@ -107,9 +113,12 @@ class EventEmitter:
         return self.on(event, func, ttl=1) if func else self.on(event, ttl=1)
 
     @overload
-    def on_any(self, func: F, *, ttl: int = -1) -> F: ...
+    def on_any(self, func: F, *, ttl: int = -1) -> F:
+        ...
+
     @overload
-    def on_any(self, *, ttl: int = -1) -> Callable[[F], F]: ...
+    def on_any(self, *, ttl: int = -1) -> Callable[[F], F]:
+        ...
 
     def on_any(self, func: Optional[F] = None, *, ttl: int = -1):
         """
@@ -133,9 +142,12 @@ class EventEmitter:
         return on_any(func) if func else on_any
 
     @overload
-    def off(self, event: str, func: F) -> F: ...
+    def off(self, event: str, func: F) -> F:
+        ...
+
     @overload
-    def off(self, event: str) -> Callable[[F], F]: ...
+    def off(self, event: str) -> Callable[[F], F]:
+        ...
 
     def off(self, event: str, func: Optional[F] = None):
         """
@@ -150,9 +162,12 @@ class EventEmitter:
         return off(func) if func else off
 
     @overload
-    def off_any(self, func: F) -> F: ...
+    def off_any(self, func: F) -> F:
+        ...
+
     @overload
-    def off_any(self) -> Callable[[F], F]: ...
+    def off_any(self) -> Callable[[F], F]:
+        ...
 
     def off_any(self, func: Optional[F] = None):
         """
