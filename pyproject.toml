@@ -54,11 +54,6 @@ dependencies = {file = ["requirements.txt"]}
 optional-dependencies = {dev = {file = ["requirements_dev.txt"]}}
 
 
-[tool.setuptools]
-
-include-package-data = false
-
-
 [tool.setuptools.packages.find]
 
 include = ["pymitter"]
