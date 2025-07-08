@@ -15,4 +15,5 @@ build:
     post_install:
       - sed -r "s/(requires-python = .+)9(.*)/\112\2/g" pyproject.toml
       - pip install uv
+      - cat pyproject.toml
       - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --all-extras --group docs --link-mode=copy
