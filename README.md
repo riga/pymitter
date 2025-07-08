@@ -20,7 +20,7 @@
     <img alt="Package downloads" src="https://img.shields.io/pypi/dm/pymitter.svg" />
   </a>
   <a href="https://codecov.io/gh/riga/pymitter">
-    <img alt="Code coverge" src="https://codecov.io/gh/riga/pymitter/branch/master/graph/badge.svg?token=MePbStZF7U" />
+    <img alt="Code coverage" src="https://codecov.io/gh/riga/pymitter/branch/master/graph/badge.svg?token=MePbStZF7U" />
   </a>
   <a href="https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml">
     <img alt="Build status" src="https://github.com/riga/pymitter/actions/workflows/lint_and_test.yml/badge.svg" />
@@ -219,7 +219,7 @@ ee.emit("my_event.*")
 
 EventEmitter constructor. **Note**: always use *kwargs* for configuration.
 When *wildcard* is *True*, wildcards are used as shown in [this example](#wildcards).
-*delimiter* is used to seperate namespaces within events.
+*delimiter* is used to separate namespaces within events.
 If *new_listener* is *True*, the *"new_listener"* event is emitted every time a new listener is registered.
 Functions listening to this event are passed `(func, event=None)`.
 *max_listeners* defines the maximum number of listeners per event.
@@ -266,19 +266,19 @@ Negative values mean infinity.
 
 - #### `emit(event, *args, **kwargs)`
     Emits an event.
-    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
+    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registration.
     Async functions are called in a new event loop.
     There is no return value.
 
 - #### `(async) emit_async(event, *args, **kwargs)`
     Emits an event.
-    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
+    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registration.
     Awaitable objects returned by async functions are awaited in the outer event loop.
     Returns an `Awaitable`.
 
 - #### `emit_future(event, *args, **kwargs)`
     Emits an event.
-    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
+    All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registration.
     Awaitable objects returned by async functions are placed at the end of the event loop using `asyncio.ensure_future`.
     There is no return value.
 
