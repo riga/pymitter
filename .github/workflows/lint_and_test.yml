@@ -58,7 +58,7 @@ jobs:
       - name: Install ☕️
         run: |
           pip install -U pip setuptools
-          pip install .
+          pip install .[dev]
 
       - name: Test 🎢
         run: pytest tests
