@@ -55,13 +55,3 @@ repos:
     hooks:
       - id: check-readthedocs
       - id: check-github-workflows
-
-  - repo: local
-    hooks:
-    - id: pytest
-      name: pytest
-      entry: ./.venv/bin/pytest tests
-      language: system
-      types: [python]
-      pass_filenames: false
-      always_run: true

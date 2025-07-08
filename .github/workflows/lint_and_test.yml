@@ -31,6 +31,38 @@ jobs:
         with:
           extra_args: --hook-stage manual --all-files
 
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - {python: "3.9", os: ubuntu-latest}
+          - {python: "3.10", os: ubuntu-latest}
+          - {python: "3.11", os: ubuntu-latest}
+          - {python: "3.12", os: ubuntu-latest}
+          - {python: "3.13", os: ubuntu-latest}
+    name: test (python ${{ matrix.version.python }})
+    runs-on: ${{ matrix.version.os }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Python ${{ matrix.version.python }} 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.version.python }}
+
+      - name: Install ☕️
+        run: |
+          pip install -U pip setuptools
+          pip install .
+
+      - name: Test 🎢
+        run: pytest tests
+
   # pypi:
   #   runs-on: ubuntu-latest
   #   steps:
