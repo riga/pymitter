@@ -18,8 +18,8 @@ jobs:
       - name: Checkout 🛎
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup python 3.9 🐍
         uses: actions/setup-python@v5
@@ -47,8 +47,8 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup Python ${{ matrix.version.python }} 🐍
         uses: actions/setup-python@v5
@@ -65,56 +65,56 @@ jobs:
           source .venv/bin/activate
           pytest tests
 
-  # pypi:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout 🛎️
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #         persist-credentials: false
+  pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
-  #     - name: Setup python 3.9 🐍
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: 3.9
+      - name: Setup python 3.9 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
 
-  #     - name: Install dependencies ☕️
-  #       run: |
-  #         pip install -U pip setuptools
-  #         pip install -U twine build
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip setuptools
+          pip install -U twine build
 
-  #     - name: Check bundling 📦
-  #       run: python -m build
+      - name: Check bundling 📦
+        run: python -m build
 
-  #     - name: Check setup 🚦
-  #       run: twine check "dist/pymitter-*.tar.gz"
+      - name: Check setup 🚦
+        run: twine check "dist/pymitter-*.tar.gz"
 
-  # coverage:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout 🛎️
-  #       uses: actions/checkout@v4
-  #       with:
-  #         persist-credentials: false
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
-  #     - name: Setup python 3.9 🐍
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: 3.9
+      - name: Setup python 3.9 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
 
-  #     - name: Install dependencies ☕️
-  #       run: |
-  #         pip install -U pip setuptools
-  #         pip install -r requirements.txt
-  #         pip install -r requirements_dev.txt
+      - name: Install dependencies ☕️
+        run: |
+          pip install -U pip setuptools uv
+          uv sync --group dev
 
-  #     - name: Run coverage test 🎢
-  #       run: pytest --cov=pymitter --cov-report xml:coverage_39.xml tests
+      - name: Run coverage test 🎢
+        run: pytest --cov=pymitter --cov-report xml:coverage_39.xml tests
 
-  #     - name: Upload report 🔝
-  #       uses: codecov/codecov-action@v5
-  #       with:
-  #         token: ${{ secrets.CODECOV_TOKEN }}
-  #         files: ./coverage_39.xml
-  #         flags: unittests
+      - name: Upload report 🔝
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage_39.xml
+          flags: unittests
