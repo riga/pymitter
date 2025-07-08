@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-
 name = "pymitter"
 description = "Python port of the extended Node.js EventEmitter 2 approach providing namespaces, wildcards and TTL."
+readme = "README.md"
 authors = [
     {name = "Marcel Rieger", email = "github.riga@icloud.com"},
 ]
@@ -52,6 +52,8 @@ dev = [
 Homepage = "https://github.com/riga/pymitter"
 Documentation = "https://pymitter.readthedocs.io"
 Repository = "https://github.com/riga/pymitter.git"
+"Bug Tracker" = "https://github.com/riga/pymitter/issues"
+Changelog = "https://github.com/riga/pymitter/releases"
 
 [tool.hatch]
 version.path = "src/pymitter/__init__.py"
