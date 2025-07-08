@@ -61,7 +61,9 @@ jobs:
           uv sync --group dev
 
       - name: Test 🎢
-        run: pytest tests
+        run: |
+          source .venv/bin/activate
+          pytest tests
 
   # pypi:
   #   runs-on: ubuntu-latest
