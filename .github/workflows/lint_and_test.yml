@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
@@ -52,27 +52,29 @@ jobs:
         run: twine check "dist/pymitter-*.tar.gz"
 
   typecheck:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-    name: typecheck (python ${{ matrix.python-version }})
+        version:
+          - {python: "3.7", os: ubuntu-22.04}
+          - {python: "3.8", os: ubuntu-latest}
+          - {python: "3.9", os: ubuntu-latest}
+          - {python: "3.10", os: ubuntu-latest}
+          - {python: "3.11", os: ubuntu-latest}
+          - {python: "3.12", os: ubuntu-latest}
+          - {python: "3.13", os: ubuntu-latest}
+    name: typecheck (python ${{ matrix.version.python }})
+    runs-on: ${{ matrix.version.os }}
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Setup Python ${{ matrix.python-version }} 🐍
+      - name: Setup Python ${{ matrix.version.python }} 🐍
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.version.python }}
 
       - name: Install dependencies ☕️
         run: |
@@ -84,28 +86,29 @@ jobs:
         run: mypy --config-file pyproject.toml pymitter
 
   test:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-    name: test (python ${{ matrix.python-version }})
+        version:
+          - {python: "3.7", os: ubuntu-22.04}
+          - {python: "3.8", os: ubuntu-latest}
+          - {python: "3.9", os: ubuntu-latest}
+          - {python: "3.10", os: ubuntu-latest}
+          - {python: "3.11", os: ubuntu-latest}
+          - {python: "3.12", os: ubuntu-latest}
+          - {python: "3.13", os: ubuntu-latest}
+    name: test (python ${{ matrix.version.python }})
+    runs-on: ${{ matrix.version.os }}
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Setup Python ${{ matrix.python-version }} 🐍
+      - name: Setup Python ${{ matrix.version.python }} 🐍
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.version.python }}
 
       - name: Install dependencies ☕️
         run: |
@@ -120,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
@@ -139,7 +142,7 @@ jobs:
         run: pytest --cov=pymitter --cov-report xml:coverage_39.xml tests
 
       - name: Upload report 🔝
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage_39.xml
