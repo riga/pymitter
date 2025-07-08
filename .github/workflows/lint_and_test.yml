@@ -57,8 +57,8 @@ jobs:
 
       - name: Install ☕️
         run: |
-          pip install -U pip setuptools
-          pip install .[dev]
+          pip install -U pip setuptools uv
+          uv sync --group dev
 
       - name: Test 🎢
         run: pytest tests
