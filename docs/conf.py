@@ -12,7 +12,7 @@ author = pm.__author__
 copyright = pm.__copyright__
 copyright = copyright[10:] if copyright.startswith("Copyright ") else copyright
 copyright = copyright.split(",", 1)[0]
-version = pm.__version__[:pm.__version__.index(".", 2)]
+version = pm.__version__[: pm.__version__.index(".", 2)]
 release = pm.__version__
 language = "en"
 
