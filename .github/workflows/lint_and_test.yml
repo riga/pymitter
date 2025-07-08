@@ -110,7 +110,9 @@ jobs:
           uv sync --group dev
 
       - name: Run coverage test 🎢
-        run: pytest --cov=pymitter --cov-report xml:coverage_39.xml tests
+        run: |
+          source .venv/bin/activate
+          pytest --cov=pymitter --cov-report xml:coverage_39.xml tests
 
       - name: Upload report 🔝
         uses: codecov/codecov-action@v5
