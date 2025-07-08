@@ -10,3 +10,4 @@ MANIFEST
 coverage.xml
 docs/_build
 .python-version
+uv.lock

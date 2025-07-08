@@ -35,7 +35,9 @@ license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"
 dynamic = ["version"]
-dependencies = []
+dependencies = [
+    "typing-extensions~=4.14.1",
+]
 
 [dependency-groups]
 dev = [
@@ -45,17 +47,15 @@ dev = [
     "types-docutils~=0.21.0",
     "pytest-cov~=6.2.1",
     "mypy~=1.16.1",
-    "typing-extensions~=4.14.1",
 ]
+# docs dependencies are meant for python 3.12 and above
 docs = [
-    "autodocsumm~=0.2.14",
-    "myst-parser~=4.0.1",
-    "sphinx~=8.2.3",
-    "sphinx-autodoc-typehints~=3.2.0",
-    "sphinx-book-theme~=1.1.4",
-    "sphinx-lfs-content~=1.1.10",
-    "typing-extensions~=4.14.1",
-
+    "autodocsumm~=0.2.14;python_version>='3.12'",
+    "myst-parser~=4.0.1;python_version>='3.12'",
+    "sphinx~=8.2.3;python_version>='3.12'",
+    "sphinx-autodoc-typehints~=3.2.0;python_version>='3.12'",
+    "sphinx-book-theme~=1.1.4;python_version>='3.12'",
+    "sphinx-lfs-content~=1.1.10;python_version>='3.12'",
 ]
 
 [project.urls]
