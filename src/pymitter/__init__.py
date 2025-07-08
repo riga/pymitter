@@ -28,12 +28,12 @@ class EventEmitter:
     """
     The EventEmitter class, ported from Node.js EventEmitter 2.
 
-    When *wildcard* is *True*, wildcards in event names are taken into account. Event names have
-    namespace support with each namspace being separated by a *delimiter* which defaults to ``"."``.
+    When *wildcard* is *True*, wildcards in event names are taken into account. Event names have namespace support with
+    each namespace being separated by a *delimiter* which defaults to ``"."``.
 
-    When *new_listener* is *True*, a ``"new_listener"`` event is emitted every time a new listener
-    is registered with arguments ``(func, event=None)``. *max_listeners* configures the total
-    maximum number of event listeners. A negative numbers means that this number is unlimited.
+    When *new_listener* is *True*, a ``"new_listener"`` event is emitted every time a new listener is registered with
+    arguments ``(func, event=None)``. *max_listeners* configures the total maximum number of event listeners. A negative
+    numbers means that this number is unlimited.
     """
 
     new_listener_event = "new_listener"
@@ -53,20 +53,18 @@ class EventEmitter:
         # tree of nodes keeping track of nested events
         self._event_tree = Tree(wildcard=wildcard, delimiter=delimiter)
 
-        # flat list of listeners triggerd on "any" event
-        self._any_listeners: List[Listener] = []
+        # flat list of listeners triggered on "any" event
+        self._any_listeners: list[Listener] = []
 
     @property
     def num_listeners(self) -> int:
         return self._event_tree.num_listeners() + len(self._any_listeners)
 
     @overload
-    def on(self, event: str, func: F, *, ttl: int = -1) -> F:
-        ...
+    def on(self, event: str, func: F, *, ttl: int = -1) -> F: ...
 
     @overload
-    def on(self, event: str, *, ttl: int = -1) -> Callable[[F], F]:
-        ...
+    def on(self, event: str, *, ttl: int = -1) -> Callable[[F], F]: ...
 
     def on(
         self,
@@ -76,10 +74,10 @@ class EventEmitter:
         ttl: int = -1,
     ):
         """
-        Registers a function to an event. *ttl* defines the times to listen with negative values
-        meaning infinity. When *func* is *None*, decorator usage is assumed. Returns the wrapped
-        function.
+        Registers a function to an event. *ttl* defines the times to listen with negative values meaning infinity. When
+        *func* is *None*, decorator usage is assumed. Returns the wrapped function.
         """
+
         def on(func: F) -> F:
             # do not register the function when the maximum would be exceeded
             if 0 <= self.max_listeners <= self.num_listeners:
@@ -96,34 +94,31 @@ class EventEmitter:
         return on(func) if func else on
 
     @overload
-    def once(self, event: str, func: F) -> F:
-        ...
+    def once(self, event: str, func: F) -> F: ...
 
     @overload
-    def once(self, event: str) -> Callable[[F], F]:
-        ...
+    def once(self, event: str) -> Callable[[F], F]: ...
 
     def once(self, event: str, func: F | None = None):
         """
-        Registers a function to an event that is called once. When *func* is *None*, decorator usage
-        is assumed. Returns the wrapped function.
+        Registers a function to an event that is called once. When *func* is *None*, decorator usage is assumed. Returns
+        the wrapped function.
         """
         return self.on(event, func, ttl=1) if func else self.on(event, ttl=1)
 
     @overload
-    def on_any(self, func: F, *, ttl: int = -1) -> F:
-        ...
+    def on_any(self, func: F, *, ttl: int = -1) -> F: ...
 
     @overload
-    def on_any(self, *, ttl: int = -1) -> Callable[[F], F]:
-        ...
+    def on_any(self, *, ttl: int = -1) -> Callable[[F], F]: ...
 
     def on_any(self, func: F | None = None, *, ttl: int = -1):
         """
-        Registers a function that is called every time an event is emitted. *ttl* defines the times
-        to listen with negative values meaning infinity. When *func* is *None*, decorator usage is
-        assumed. Returns the wrapped function.
+        Registers a function that is called every time an event is emitted. *ttl* defines the times to listen with
+        negative values meaning infinity. When *func* is *None*, decorator usage is assumed. Returns the wrapped
+        function.
         """
+
         def on_any(func: F) -> F:
             # do not register the function when the maximum would be exceeded
             if 0 <= self.max_listeners <= self.num_listeners:
@@ -140,18 +135,17 @@ class EventEmitter:
         return on_any(func) if func else on_any
 
     @overload
-    def off(self, event: str, func: F) -> F:
-        ...
+    def off(self, event: str, func: F) -> F: ...
 
     @overload
-    def off(self, event: str) -> Callable[[F], F]:
-        ...
+    def off(self, event: str) -> Callable[[F], F]: ...
 
     def off(self, event: str, func: F | None = None):
         """
-        Removes a function that is registered to an event. When *func* is *None*, decorator usage is
-        assumed. Returns the wrapped function.
+        Removes a function that is registered to an event. When *func* is *None*, decorator usage is assumed. Returns
+        the wrapped function.
         """
+
         def off(func: Callable) -> Callable:
             self._event_tree.remove_listeners_by_func(event, func)
 
@@ -160,24 +154,19 @@ class EventEmitter:
         return off(func) if func else off
 
     @overload
-    def off_any(self, func: F) -> F:
-        ...
+    def off_any(self, func: F) -> F: ...
 
     @overload
-    def off_any(self) -> Callable[[F], F]:
-        ...
+    def off_any(self) -> Callable[[F], F]: ...
 
     def off_any(self, func: F | None = None):
         """
-        Removes a function that was registered via :py:meth:`on_any`. When *func* is *None*,
-        decorator usage is assumed. Returns the wrapped function.
+        Removes a function that was registered via :py:meth:`on_any`. When *func* is *None*, decorator usage is assumed.
+        Returns the wrapped function.
         """
+
         def off_any(func: F) -> F:
-            self._any_listeners[:] = [
-                listener
-                for listener in self._any_listeners
-                if listener.func != func
-            ]
+            self._any_listeners[:] = [listener for listener in self._any_listeners if listener.func != func]
 
             return func
 
@@ -240,23 +229,24 @@ class EventEmitter:
 
     def emit(self, event: str, *args: Any, **kwargs: Any) -> None:
         """
-        Emits an *event*. All functions of events that match *event* are invoked with *args* and
-        *kwargs* in the exact order of their registration, with the exception of async functions
-        that are invoked in a separate event loop.
+        Emits an *event*. All functions of events that match *event* are invoked with *args* and *kwargs* in the exact
+        order of their registration, with the exception of async functions that are invoked in a separate event loop.
         """
         # emit normal functions and get awaitables of async ones
         awaitables = self._emit(event, *args, **kwargs)
 
         # handle awaitables
         if awaitables:
+
             async def start() -> None:
                 await asyncio.gather(*awaitables)
+
             asyncio.run(start())
 
     async def emit_async(self, event: str, *args: Any, **kwargs: Any) -> None:
         """
-        Awaitable version of :py:meth:`emit`. However, this method does not start a new event loop
-        but uses the existing one.
+        Awaitable version of :py:meth:`emit`. However, this method does not start a new event loop but uses the existing
+        one.
         """
         # emit normal functions and get awaitables of async ones
         awaitables = self._emit(event, *args, **kwargs)
@@ -267,8 +257,8 @@ class EventEmitter:
 
     def emit_future(self, event: str, *args: Any, **kwargs: Any) -> None:
         """
-        Deferred version of :py:meth:`emit` with all awaitable events being places at the end of the
-        existing event loop (using :py:func:`asyncio.ensure_future`).
+        Deferred version of :py:meth:`emit` with all awaitable events being places at the end of the existing event loop
+        (using :py:func:`asyncio.ensure_future`).
         """
         # emit normal functions and get awaitables of async ones
         awaitables = self._emit(event, *args, **kwargs)
@@ -279,7 +269,6 @@ class EventEmitter:
 
 
 class BaseNode:
-
     def __init__(self, wildcard: bool, delimiter: str) -> None:
         self.wildcard = wildcard
         self.delimiter = delimiter
@@ -303,10 +292,7 @@ class BaseNode:
         return node
 
     def walk_nodes(self) -> Iterator[tuple[str, tuple[str, ...], list[str]]]:
-        queue = [
-            (name, [name], node)
-            for name, node in self.nodes.items()
-        ]
+        queue = [(name, [name], node) for name, node in self.nodes.items()]
         while queue:
             name, path, node = queue.pop(0)
 
@@ -318,10 +304,7 @@ class BaseNode:
             yield (name, tuple(path), child_names)
 
             # add remaining child nodes
-            queue.extend([
-                (child_name, [*path, child_name], node.nodes[child_name])
-                for child_name in child_names
-            ])
+            queue.extend([(child_name, [*path, child_name], node.nodes[child_name]) for child_name in child_names])
 
 
 class Node(BaseNode):
@@ -337,7 +320,7 @@ class Node(BaseNode):
         super().__init__(*args)
 
         self.name = name
-        self.listeners: List[Listener] = []
+        self.listeners: list[Listener] = []
 
     def num_listeners(self, recursive: bool = True) -> int:
         n = len(self.listeners)
@@ -430,8 +413,8 @@ class Tree(BaseNode):
 
 class Listener:
     """
-    A simple event listener class that wraps a function *func* for a specific *event* and that keeps
-    track of the times to listen left.
+    A simple event listener class that wraps a function *func* for a specific *event* and that keeps track of the times
+    to listen left.
     """
 
     def __init__(self, func: Callable[..., Any], event: str, ttl: int) -> None:
@@ -452,8 +435,8 @@ class Listener:
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """
-        Invokes the wrapped function when ttl is non-zero, decreases the ttl value when positive and
-        returns its return value.
+        Invokes the wrapped function when ttl is non-zero, decreases the ttl value when positive and returns its return
+        value.
         """
         result = None
         if self.ttl != 0:
