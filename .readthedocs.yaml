@@ -13,6 +13,6 @@ build:
     python: "3.12"
   jobs:
     post_install:
-      - bash -c "sed -i 's/>=3.9/>=3.12/g' pyproject.toml"
+      - bash -c "sed -i \'s/>=3.9/>=3.12/g\' pyproject.toml"
       - pip install uv
       - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --all-extras --group docs --link-mode=copy
