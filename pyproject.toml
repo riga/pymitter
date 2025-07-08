@@ -47,6 +47,16 @@ dev = [
     "mypy~=1.16.1",
     "typing-extensions~=4.14.1",
 ]
+docs = [
+    "autodocsumm~=0.2.14",
+    "myst-parser~=4.0.1",
+    "sphinx~=8.2.3",
+    "sphinx-autodoc-typehints~=3.2.0",
+    "sphinx-book-theme~=1.1.4",
+    "sphinx-lfs-content~=1.1.10",
+    "typing-extensions~=4.14.1",
+
+]
 
 [project.urls]
 Homepage = "https://github.com/riga/pymitter"
