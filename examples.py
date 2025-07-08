@@ -1,15 +1,6 @@
-# coding: utf-8
-
-# python imports
-import os
-import sys
-
-# adjust the path to import pymitter
-base = os.path.normpath(os.path.join(os.path.abspath(__file__), "../.."))
-sys.path.insert(0, base)
+from pymitter import EventEmitter
 
 # create an EventEmitter instance
-from pymitter import EventEmitter
 ee = EventEmitter(wildcard=True, new_listener=True, max_listeners=-1)
 
 

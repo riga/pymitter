@@ -12,7 +12,7 @@
   <a href="http://pymitter.readthedocs.io">
     <img alt="Documentation status" src="https://readthedocs.org/projects/pymitter/badge/?version=latest" />
   </a>
-  <img alt="Python version" src="https://img.shields.io/badge/Python-%E2%89%A53.7-blue" />
+  <img alt="Python version" src="https://img.shields.io/badge/Python-%E2%89%A53.9-blue" />
   <a href="https://pypi.python.org/pypi/pymitter">
     <img alt="Package version" src="https://img.shields.io/pypi/v/pymitter.svg?style=flat" />
   </a>
@@ -50,7 +50,6 @@ Original source hosted at [GitHub](https://github.com/riga/pymitter).
 - Coroutine support
 - Lightweight implementation, good performance
 
-
 ## Installation
 
 Simply install via [pip](https://pypi.python.org/pypi/pymitter):
@@ -59,8 +58,8 @@ Simply install via [pip](https://pypi.python.org/pypi/pymitter):
 pip install pymitter
 ```
 
-The last version with Python 2 support was [v0.3.2](https://github.com/riga/pymitter/tree/v0.3.2) ([PyPI](https://pypi.org/project/pymitter/0.3.2)).
-
+- The last version supporting Python 2 was [v0.3.2](https://github.com/riga/pymitter/tree/v0.3.2) ([PyPI](https://pypi.org/project/pymitter/0.3.2)).
+- The last version supporting Python ≤3.8 was [v1.0.0](https://github.com/riga/pymitter/tree/v1.0.0) ([PyPI](https://pypi.org/project/pymitter/1.0.0)).
 
 ## Examples
 
@@ -104,7 +103,6 @@ ee.emit("my_third_event", "baz")
 # -> "handler3 called with baz"
 ```
 
-
 ### Coroutines
 
 Wrapping `async` functions outside an event loop will start an internal event loop and calls to `emit` return synchronously.
@@ -147,7 +145,6 @@ async def main():
 
 Use `emit_future` to not return awaitable objects but to place them at the end of the existing event loop (using `asyncio.ensure_future` internally).
 
-
 ### TTL (times to listen)
 
 ```python
@@ -177,7 +174,6 @@ ee.emit("my_event")
 ee.emit("my_event")
 # nothing called anymore
 ```
-
 
 ### Wildcards
 
@@ -216,7 +212,6 @@ ee.emit("my_event.*")
 # -> "handler2 called"
 # -> "handler3 called"
 ```
-
 
 ## API
 
@@ -286,7 +281,6 @@ Negative values mean infinity.
     All functions of events that match *event* are invoked with *args* and *kwargs* in the exact order of their registeration.
     Awaitable objects returned by async functions are placed at the end of the event loop using `asyncio.ensure_future`.
     There is no return value.
-
 
 ## Development
 

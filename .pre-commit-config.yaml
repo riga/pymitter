@@ -1,0 +1,57 @@
+ci:
+  autoupdate_commit_msg: "chore: update pre-commit hooks"
+  autofix_commit_msg: "style: pre-commit fixes"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v5.0.0"
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: name-tests-test
+        args: ["--pytest-test-first"]
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.11.0"
+    hooks:
+      - id: ruff
+        args: ["--fix", "--show-fixes"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.11.0"
+    hooks:
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.15.0"
+    hooks:
+      - id: mypy
+        files: pymitter|tests
+        args: [--config-file=pyproject.toml]
+        additional_dependencies:
+          - pytest
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        exclude: ^(LICENSE$)
+
+  - repo: https://github.com/henryiii/validate-pyproject-schema-store
+    rev: "2025.03.17"
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: "0.31.2"
+    hooks:
+      - id: check-readthedocs
+      - id: check-github-workflows

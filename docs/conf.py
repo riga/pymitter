@@ -1,13 +1,10 @@
-# coding: utf-8
-
-import sys
 import os
-
+import sys
 
 thisdir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(thisdir))
 
-import pymitter as pm
+import pymitter as pm  # noqa: E402, I001
 
 
 project = pm.__name__
@@ -27,7 +24,7 @@ exclude_patterns = []
 pygments_style = "sphinx"
 add_module_names = False
 
-html_title = "{} v{}".format(project, version)
+html_title = f"{project} v{version}"
 html_logo = "../assets/logo.png"
 html_favicon = "../assets/favicon.ico"
 html_theme = "sphinx_book_theme"

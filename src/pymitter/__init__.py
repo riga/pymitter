@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 Python port of the extended Node.js EventEmitter 2 approach providing namespaces, wildcards and TTL.
 """
@@ -16,11 +14,11 @@ __status__ = "Development"
 __version__ = "1.0.0"
 __all__ = ["EventEmitter", "Listener"]
 
-import time
-import fnmatch
 import asyncio
-from collections.abc import Iterator, Awaitable
-from typing import Any, Callable, List, Optional, TypeVar, overload, Dict, Tuple
+import fnmatch
+import time
+from collections.abc import Awaitable, Iterator
+from typing import Any, Callable, TypeVar, overload
 
 F = TypeVar("F", bound=Callable[..., Any])
 T = TypeVar("T")
@@ -73,7 +71,7 @@ class EventEmitter:
     def on(
         self,
         event: str,
-        func: Optional[F] = None,
+        func: F | None = None,
         *,
         ttl: int = -1,
     ):
@@ -105,7 +103,7 @@ class EventEmitter:
     def once(self, event: str) -> Callable[[F], F]:
         ...
 
-    def once(self, event: str, func: Optional[F] = None):
+    def once(self, event: str, func: F | None = None):
         """
         Registers a function to an event that is called once. When *func* is *None*, decorator usage
         is assumed. Returns the wrapped function.
@@ -120,7 +118,7 @@ class EventEmitter:
     def on_any(self, *, ttl: int = -1) -> Callable[[F], F]:
         ...
 
-    def on_any(self, func: Optional[F] = None, *, ttl: int = -1):
+    def on_any(self, func: F | None = None, *, ttl: int = -1):
         """
         Registers a function that is called every time an event is emitted. *ttl* defines the times
         to listen with negative values meaning infinity. When *func* is *None*, decorator usage is
@@ -149,7 +147,7 @@ class EventEmitter:
     def off(self, event: str) -> Callable[[F], F]:
         ...
 
-    def off(self, event: str, func: Optional[F] = None):
+    def off(self, event: str, func: F | None = None):
         """
         Removes a function that is registered to an event. When *func* is *None*, decorator usage is
         assumed. Returns the wrapped function.
@@ -169,7 +167,7 @@ class EventEmitter:
     def off_any(self) -> Callable[[F], F]:
         ...
 
-    def off_any(self, func: Optional[F] = None):
+    def off_any(self, func: F | None = None):
         """
         Removes a function that was registered via :py:meth:`on_any`. When *func* is *None*,
         decorator usage is assumed. Returns the wrapped function.
@@ -192,19 +190,19 @@ class EventEmitter:
         self._event_tree.clear()
         del self._any_listeners[:]
 
-    def listeners(self, event: str) -> List[Callable[..., Any]]:
+    def listeners(self, event: str) -> list[Callable[..., Any]]:
         """
         Returns all functions that are registered to an event.
         """
         return [listener.func for listener in self._event_tree.find_listeners(event)]
 
-    def listeners_any(self) -> List[Callable[..., Any]]:
+    def listeners_any(self) -> list[Callable[..., Any]]:
         """
         Returns all functions that were registered using :py:meth:`on_any`.
         """
         return [listener.func for listener in self._any_listeners]
 
-    def listeners_all(self) -> List[Callable[..., Any]]:
+    def listeners_all(self) -> list[Callable[..., Any]]:
         """
         Returns all registered functions, ordered by their registration time.
         """
@@ -220,7 +218,7 @@ class EventEmitter:
 
         return [listener.func for listener in listeners]
 
-    def _emit(self, event: str, *args: Any, **kwargs: Any) -> List[Awaitable]:
+    def _emit(self, event: str, *args: Any, **kwargs: Any) -> list[Awaitable]:
         listeners = self._event_tree.find_listeners(event)
         if event != self.new_listener_event:
             listeners.extend(self._any_listeners)
@@ -277,20 +275,21 @@ class EventEmitter:
 
         # handle awaitables
         if awaitables:
-            asyncio.ensure_future(asyncio.gather(*awaitables))
+            asyncio.ensure_future(asyncio.gather(*awaitables))  # noqa: RUF006
 
 
 class BaseNode:
+
     def __init__(self, wildcard: bool, delimiter: str) -> None:
         self.wildcard = wildcard
         self.delimiter = delimiter
-        self.parent: "Optional[BaseNode]" = None
-        self.nodes: Dict[str, "Node"] = {}
+        self.parent: BaseNode | None = None
+        self.nodes: dict[str, Node] = {}
 
     def clear(self) -> None:
         self.nodes.clear()
 
-    def add_node(self, node: "Node") -> "Node":
+    def add_node(self, node: Node) -> Node:
         # when there is a node with the exact same name (pattern), merge listeners
         if node.name in self.nodes:
             _node = self.nodes[node.name]
@@ -303,7 +302,7 @@ class BaseNode:
 
         return node
 
-    def walk_nodes(self) -> Iterator[Tuple[str, Tuple[str, ...], List[str]]]:
+    def walk_nodes(self) -> Iterator[tuple[str, tuple[str, ...], list[str]]]:
         queue = [
             (name, [name], node)
             for name, node in self.nodes.items()
@@ -320,7 +319,7 @@ class BaseNode:
 
             # add remaining child nodes
             queue.extend([
-                (child_name, path + [child_name], node.nodes[child_name])
+                (child_name, [*path, child_name], node.nodes[child_name])
                 for child_name in child_names
             ])
 
@@ -363,7 +362,7 @@ class Node(BaseNode):
 
         return self.name == pattern
 
-    def find_nodes(self, event: str | List[str]) -> List[Node]:
+    def find_nodes(self, event: str | list[str]) -> list[Node]:
         # trivial case
         if not event:
             return []
@@ -394,7 +393,7 @@ class Tree(BaseNode):
     def num_listeners(self) -> int:
         return sum(node.num_listeners(recursive=True) for node in self.nodes.values())
 
-    def find_nodes(self, *args: Any, **kwargs: Any) -> List[Node]:
+    def find_nodes(self, *args: Any, **kwargs: Any) -> list[Node]:
         return sum((node.find_nodes(*args, **kwargs) for node in self.nodes.values()), [])
 
     def add_listener(self, event: str, listener: Listener) -> None:
@@ -419,8 +418,8 @@ class Tree(BaseNode):
         for node in self.find_nodes(event):
             node.remove_listeners_by_func(func)
 
-    def find_listeners(self, event: str, sort: bool = True) -> List[Listener]:
-        listeners: List[Listener] = sum((node.listeners for node in self.find_nodes(event)), [])
+    def find_listeners(self, event: str, sort: bool = True) -> list[Listener]:
+        listeners: list[Listener] = sum((node.listeners for node in self.find_nodes(event)), [])
 
         # sort by registration time
         if sort:
@@ -449,7 +448,7 @@ class Listener:
 
     @property
     def is_async_callable(self) -> bool:
-        return asyncio.iscoroutinefunction(getattr(self.func, "__call__", None))
+        return asyncio.iscoroutinefunction(getattr(self.func, "__call__", None))  # noqa: B004
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """
