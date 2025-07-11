@@ -61,7 +61,7 @@ class SyncTestCase(unittest.TestCase):
         def t(iterable):
             return tuple((obj if isinstance(obj, str) else t(obj)) for obj in iterable)
 
-        ee = EventEmitter()
+        ee = EventEmitter(wildcard=True)
         assert t(ee._event_tree.walk_nodes()) == ()
 
         # normal traversal
@@ -171,6 +171,28 @@ class SyncTestCase(unittest.TestCase):
         assert ee.num_listeners == 2
 
         ee.off_all()
+        assert ee.num_listeners == 0
+
+    def test_off_event(self):
+        ee = EventEmitter(wildcard=True)
+
+        ee.on("foo.bar")(lambda: None)
+        ee.on("foo.baz")(lambda: None)
+
+        assert ee.num_listeners == 2
+        assert len(nodes := ee._event_tree.find_nodes("foo.bar")) == 1
+        assert nodes[0].num_listeners() == 1
+        assert nodes[0].name == "bar"
+
+        ee.off("foo.bar")
+        assert ee.num_listeners == 1
+        assert len(nodes := ee._event_tree.find_nodes("foo.bar")) == 1
+        assert nodes[0].num_listeners() == 0
+
+        ee.on("foo.bar")(lambda: None)
+        assert ee.num_listeners == 2
+
+        ee.off("foo.*")
         assert ee.num_listeners == 0
 
     def test_listeners(self):
