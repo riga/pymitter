@@ -242,9 +242,8 @@ Negative values mean infinity.
     Returns the function.
 
 - #### `off(event, func=None)`
-    Removes a function that is registered to an event.
-    When *func* is *None*, decorator usage is assumed.
-    Returns the function.
+    Removes a function that is registered to an event and returns it.
+    When *func* is *None*, all functions of *event* are removed and *None* is returned.
 
 - #### `off_any(func=None)`
     Removes a function that was registered via `on_any()`.
